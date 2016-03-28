@@ -2,9 +2,9 @@ package org.openvisu.zoneminder;
 
 import java.util.Map;
 
-public class Monitor extends ZMBaseObject
+public class ZMMonitor extends ZMBaseObject
 {
-  public Monitor(Map<String, String> map)
+  public ZMMonitor(Map<String, String> map)
   {
     super(map);
   }
@@ -14,9 +14,9 @@ public class Monitor extends ZMBaseObject
     return super.getValue("Name");
   }
 
-  public MonitorFunction getFunction()
+  public ZMMonitorFunction getFunction()
   {
-    return MonitorFunction.get(getValue("Function"));
+    return ZMMonitorFunction.get(getValue("Function"));
   }
 
   @Override

@@ -2,11 +2,11 @@ package org.openvisu.zoneminder;
 
 import org.apache.commons.lang3.StringUtils;
 
-public enum MonitorFunction
+public enum ZMMonitorFunction
 {
   NONE, MONITOR, MODECT, RECORD, MOCORD, NODECT;
 
-  public static MonitorFunction get(String str)
+  public static ZMMonitorFunction get(String str)
   {
     if (StringUtils.isEmpty(str) == true) {
       return null;
