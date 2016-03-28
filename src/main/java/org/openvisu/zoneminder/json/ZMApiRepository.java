@@ -8,10 +8,9 @@ import java.util.Map;
 import org.openvisu.zoneminder.ZMConfig;
 import org.openvisu.zoneminder.ZMEvent;
 import org.openvisu.zoneminder.ZMFrame;
+import org.openvisu.zoneminder.ZMFrameType;
 import org.openvisu.zoneminder.ZMMonitor;
 import org.springframework.util.CollectionUtils;
-
-import com.jayway.jsonpath.JsonPath;
 
 public class ZMApiRepository
 {
@@ -35,11 +34,13 @@ public class ZMApiRepository
     if (monitors == null) {
       String json;
       json = session.httpGet("api/monitors.json");
-      List<Map<String, Object>> elements = JsonPath.parse(json).read("$.monitors", List.class);
+      JsonReader jsonReader = new JsonReader(json);
+      List<Object> monitorObjects = jsonReader.getList("monitors");
+
       monitors = new ArrayList<>();
-      if (elements != null && elements.isEmpty() == false) {
-        for (Map<String, Object> map : elements) {
-          ZMMonitor monitor = new ZMMonitor((Map) map.get("Monitor"));
+      if (monitorObjects != null && monitorObjects.isEmpty() == false) {
+        for (Object obj : monitorObjects) {
+          ZMMonitor monitor = new ZMMonitor((Map) obj);
           monitors.add(monitor);
         }
       }
@@ -62,11 +63,12 @@ public class ZMApiRepository
     if (configMap == null) {
       configMap = new HashMap<>();
       String json = session.httpGet("api/configs.json");
-      List<Map<String, Object>> elements = JsonPath.parse(json).read("$.configs", List.class);
-      Map<String, ZMConfig> configMap = new HashMap<>();
-      if (elements != null && elements.isEmpty() == false) {
-        for (Map<String, Object> map : elements) {
-          ZMConfig config = new ZMConfig((Map) map.get("Config"));
+      JsonReader jsonReader = new JsonReader(json);
+      List<Object> configObjects = jsonReader.getList("configs");
+      if (configObjects != null && configObjects.isEmpty() == false) {
+        for (Object obj : configObjects) {
+          Map map = (Map) ((Map) obj).get("Config");
+          ZMConfig config = new ZMConfig(map);
           configMap.put(config.getName(), config);
         }
       }
@@ -90,18 +92,20 @@ public class ZMApiRepository
       String json;
       json = session.httpGet("api/events.json?page=1");
       int pageCount = 1;
+      JsonReader jsonReader = new JsonReader(json);
+      Map<String, Object> pagination = (Map) jsonReader.getMap().get("pagination");
       try {
-        List<Integer> pageCountString = JsonPath.parse(json).read("$..pageCount", List.class);
-        pageCount = pageCountString.get(0);
+        pageCount = (int)pagination.get("pageCount");
       } catch (Exception ex) {
         log.warn("Can't read any events (parameter pageCount expected but not given.", ex);
       }
       int current = 1;
+      List<Object> eventObjects = jsonReader.getList("events");
       events = new ArrayList<>();
       do {
-        List<Map<String, Object>> elements = JsonPath.parse(json).read("$.events", List.class);
-        if (elements != null && elements.isEmpty() == false) {
-          for (Map<String, Object> map : elements) {
+        if (eventObjects != null && eventObjects.isEmpty() == false) {
+          for (Object obj : eventObjects) {
+            Map<String, Object> map = (Map) obj;
             ZMEvent event = new ZMEvent((Map) map.get("Event"));
             events.add(event);
           }
@@ -133,13 +137,17 @@ public class ZMApiRepository
     JsonReader jsonReader = new JsonReader(json);
     List<Object> frameObjects = jsonReader.getList("event", "Frame");
     List<ZMFrame> frames = new ArrayList<>();
+    int alarmCounter = 0;
     if (CollectionUtils.isEmpty(frameObjects) == false) {
       for (Object obj : frameObjects) {
-        ZMFrame frame = new ZMFrame((Map)obj);
+        ZMFrame frame = new ZMFrame((Map) obj);
+        if (frame.getType() == ZMFrameType.ALARM) {
+          alarmCounter++;
+        }
         frames.add(frame);
       }
     }
-    log.info("Number of read frames: " + frames.size());
+    log.info("Number of read frames: " + frames.size() + " with " + alarmCounter + " alarms.");
     event.setFrames(frames);
   }
 }

@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.util.List;
 
 import org.openvisu.OpenVisuConfig;
+import org.openvisu.zoneminder.ZMConfig;
 import org.openvisu.zoneminder.ZMEvent;
+import org.openvisu.zoneminder.ZMMonitor;
 
 /**
  * Main class.
@@ -12,7 +14,7 @@ import org.openvisu.zoneminder.ZMEvent;
  */
 public class ZMApiRepositoryTestMain
 {
-  // private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(ZMApiRepositoryTestMain.class);
+   private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(ZMApiRepositoryTestMain.class);
 
   /**
    * Main method.
@@ -28,10 +30,14 @@ public class ZMApiRepositoryTestMain
     ZMClientSession session = new ZMClientSession(url);
     session.authenticate(user, password);
     ZMApiRepository repo = new ZMApiRepository(session);
+    List<ZMMonitor> monitors = repo.getMonitors();
+    log.info("Number of read monitors: " + (monitors != null ? monitors.size() : 0));
+    ZMConfig config = repo.getConfig("ZM_WEB_EVENTS_PER_PAGE");
+    log.info("Config parameter WEB_EVENTS_PER_PAGE=" + config.getIntValue());
     List<ZMEvent> events = repo.getEvents();
     for (ZMEvent event : events) {
       if (event.getAlarmFrames() > 0) {
-        System.out.println("Alarms: " + event);
+        log.info("Event with alarms: " + event);
         repo.readFrames(event);
         // for (ZMFrame frame : event.getFrames()) {
         // if ("Alarm".equals(frame.getValue("Type")) == true) {

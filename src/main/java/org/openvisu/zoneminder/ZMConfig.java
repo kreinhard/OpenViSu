@@ -14,6 +14,16 @@ public class ZMConfig extends ZMBaseObject
     return super.getValue("Name");
   }
 
+  public String getValue()
+  {
+    return getValue("Value");
+  }
+
+  public int getIntValue()
+  {
+    return getIntValue("Value");
+  }
+
   @Override
   public String toString()
   {
