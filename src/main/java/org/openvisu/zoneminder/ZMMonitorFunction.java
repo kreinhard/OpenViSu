@@ -4,7 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 
 public enum ZMMonitorFunction
 {
-  NONE, MONITOR, MODECT, RECORD, MOCORD, NODECT;
+  NONE, MONITOR, MODECT, RECORD, MOCORD, NODECT, UNKNOWN;
 
   public static ZMMonitorFunction get(String str)
   {
@@ -22,7 +22,8 @@ public enum ZMMonitorFunction
       return MOCORD;
     } else if ("Nodect".equals(str) == true) {
       return NODECT;
+    } else {
+      return UNKNOWN;
     }
-    return null;
   }
 }

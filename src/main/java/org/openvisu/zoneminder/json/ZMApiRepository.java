@@ -9,6 +9,7 @@ import org.openvisu.zoneminder.ZMConfig;
 import org.openvisu.zoneminder.ZMEvent;
 import org.openvisu.zoneminder.ZMFrame;
 import org.openvisu.zoneminder.ZMMonitor;
+import org.springframework.util.CollectionUtils;
 
 import com.jayway.jsonpath.JsonPath;
 
@@ -125,23 +126,20 @@ public class ZMApiRepository
     return this;
   }
 
-
   public void readFrames(ZMEvent event)
   {
     String json;
     json = session.httpGet("api/events/" + event.getId() + ".json");
+    JsonReader jsonReader = new JsonReader(json);
+    List<Object> frameObjects = jsonReader.getList("event", "Frame");
     List<ZMFrame> frames = new ArrayList<>();
-    List<Map<String, Object>> elements = JsonPath.parse(json).read("$.event", List.class);
-    if (elements != null && elements.isEmpty() == false) {
-      for (Map<String, Object> map : elements) {
-        Map obj = (Map) map.get("Frame");
-        if (obj == null) {
-          continue; // Should be Event or Monitor.
-        }
-        ZMFrame frame = new ZMFrame(obj);
+    if (CollectionUtils.isEmpty(frameObjects) == false) {
+      for (Object obj : frameObjects) {
+        ZMFrame frame = new ZMFrame((Map)obj);
         frames.add(frame);
       }
     }
+    log.info("Number of read frames: " + frames.size());
     event.setFrames(frames);
   }
 }

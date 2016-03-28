@@ -14,9 +14,14 @@ public class ZMFrame extends ZMBaseObject
     return super.getValue("FrameId");
   }
 
+  public ZMFrameType getType()
+  {
+    return ZMFrameType.get(getValue("Type"));
+  }
+
   @Override
   public String toString()
   {
-    return "Frame #" + getId() + " frameId=" + getFrameId();
+    return "Frame #" + getId() + ", frameId=" + getFrameId() + ", type=" + getType();
   }
 }

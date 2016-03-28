@@ -1,12 +1,10 @@
 package org.openvisu.zoneminder.json;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
 import org.openvisu.OpenVisuConfig;
 import org.openvisu.zoneminder.ZMEvent;
-import org.openvisu.zoneminder.ZMFrame;
 
 /**
  * Main class.
@@ -14,6 +12,8 @@ import org.openvisu.zoneminder.ZMFrame;
  */
 public class ZMApiRepositoryTestMain
 {
+  // private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(ZMApiRepositoryTestMain.class);
+
   /**
    * Main method.
    * @param args
@@ -33,11 +33,11 @@ public class ZMApiRepositoryTestMain
       if (event.getAlarmFrames() > 0) {
         System.out.println("Alarms: " + event);
         repo.readFrames(event);
-        for (ZMFrame frame : event.getFrames()) {
-          if ("Alarm".equals(frame.getValue("Type")) == true) {
-            System.out.println("Frame" + frame);
-          }
-        }
+        // for (ZMFrame frame : event.getFrames()) {
+        // if ("Alarm".equals(frame.getValue("Type")) == true) {
+        // log.info("Frame" + frame);
+        // }
+        // }
       }
     }
     session.closeQuietly();
