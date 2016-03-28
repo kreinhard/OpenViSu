@@ -6,8 +6,6 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
@@ -33,7 +31,7 @@ import org.apache.http.util.EntityUtils;
 
 public class ZMClientSession
 {
-  private final static Logger LOGGER = Logger.getLogger(ZMClientSession.class.getName());
+  private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(ZMClientSession.class);
 
   private String baseUrl;
 
@@ -48,34 +46,35 @@ public class ZMClientSession
   public ZMClientSession(String url)
   {
     this.baseUrl = url;
-    // Create a trust manager that does not validate certificate chains
-    TrustManager[] trustAllCerts = new TrustManager[] { new TrustAllManager()};
+    if (url.startsWith("https") == true) {
+      // Create a trust manager that does not validate certificate chains
+      TrustManager[] trustAllCerts = new TrustManager[] { new TrustAllManager()};
 
-    // Install the all-trusting trust manager
-    SSLContext sslContext = null;
-
-    try {
-      sslContext = SSLContext.getInstance("SSL");
-    } catch (NoSuchAlgorithmException e) {
-      LOGGER.log(Level.WARNING, e.getMessage(), e);
-      throw new RuntimeException("Error while trying to instantiate SSL context.", e);
-    }
-    try {
-      sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
-    } catch (KeyManagementException e) {
-      LOGGER.log(Level.WARNING, e.getMessage(), e);
-      throw new RuntimeException("Error while trying to instantiate SSL context.", e);
-    }
-
-    // Create all-trusting host name verifier
-    HostnameVerifier allHostsValid = new HostnameVerifier() {
-      public boolean verify(String hostname, SSLSession session)
-      {
-        return true;
+      // Install the all-trusting trust manager
+      SSLContext sslContext = null;
+      try {
+        sslContext = SSLContext.getInstance("SSL");
+      } catch (NoSuchAlgorithmException e) {
+        log.warn(e.getMessage(), e);
+        throw new RuntimeException("Error while trying to instantiate SSL context.", e);
       }
-    };
-
-    sslsf = new SSLConnectionSocketFactory(sslContext, new String[] { "TLSv1"}, null, allHostsValid);
+      try {
+        sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+      } catch (KeyManagementException e) {
+        log.warn(e.getMessage(), e);
+        throw new RuntimeException("Error while trying to instantiate SSL context.", e);
+      }
+      // Create all-trusting host name verifier
+      HostnameVerifier allHostsValid = new HostnameVerifier() {
+        public boolean verify(String hostname, SSLSession session)
+        {
+          return true;
+        }
+      };
+      sslsf = new SSLConnectionSocketFactory(sslContext, new String[] { "TLSv1"}, null, allHostsValid);
+    } else {
+      sslsf = null;
+    }
   }
 
   public void closeQuietly()
@@ -87,7 +86,7 @@ public class ZMClientSession
     try {
       httpclient.close();
     } catch (IOException e) {
-      LOGGER.log(Level.INFO, "Error while closing http client in ZMClientSession (maybe OK). Reason: " + e.getMessage());
+      log.info("Error while closing http client in ZMClientSession (maybe OK). Reason: " + e.getMessage());
     }
   }
 
@@ -99,12 +98,11 @@ public class ZMClientSession
     String url = concatePath(baseUrl, "index.php");
     String result = internalHttpPost(url, new BasicNameValuePair("username", username), new BasicNameValuePair("password", password),
         new BasicNameValuePair("action", "login"), new BasicNameValuePair("view", "console"));
-    LOGGER.log(Level.FINE, "authentication result: " + result);
     if (result.contains("loginForm") == true) {
-      LOGGER.warning("Authentication for user '" + username + "' wasn't sucessful.");
+      log.warn("Authentication for user '" + username + "' wasn't sucessful.");
       return false;
     }
-    LOGGER.info("Authentication for user '" + username + "' was sucessful.");
+    log.info("Authentication for user '" + username + "' was sucessful.");
     authorized = true;
     return true;
   }
@@ -138,7 +136,7 @@ public class ZMClientSession
     HttpDelete httpDelete = new HttpDelete(url);
     return request(httpDelete, "HTTP Delete");
   }
-  
+
   public String httpGet(String path)
   {
     String url = concatePath(baseUrl, path);
@@ -168,7 +166,7 @@ public class ZMClientSession
     try {
       httpPost.setEntity(new UrlEncodedFormEntity(nvps));
     } catch (UnsupportedEncodingException e) {
-      LOGGER.log(Level.SEVERE, e.getMessage(), e);
+      log.error(e.getMessage(), e);
       throw new RuntimeException("Error while trying to encode post params.", e);
     }
     return request(httpPost, "HTTP Post");
@@ -181,20 +179,22 @@ public class ZMClientSession
     try {
       response = httpclient.execute(request);
       HttpEntity entity = response.getEntity();
-      LOGGER.log(Level.INFO, method + " '" + url + "': " + response.getStatusLine());
+      log.info(method + " '" + url + "': " + response.getStatusLine());
       // for (Cookie cookie : cookieStore.getCookies()) {
       // System.out.println("Cookie=" + cookie.getName() + ", value=" + cookie.getValue());
       // }
       return EntityUtils.toString(entity);
     } catch (IOException ex) {
-      LOGGER.log(Level.WARNING, ex.getMessage(), ex);
+      log.warn(ex.getMessage(), ex);
       throw new RuntimeException("Error while requesting http post '" + url + "'.", ex);
     } finally {
-      try {
-        response.close();
-      } catch (IOException ex) {
-        LOGGER.log(Level.WARNING, ex.getMessage(), ex);
-        throw new RuntimeException("Error while requesting http post '" + url + "'.", ex);
+      if (response != null) {
+        try {
+          response.close();
+        } catch (IOException ex) {
+          log.warn(ex.getMessage(), ex);
+          throw new RuntimeException("Error while requesting http post '" + url + "'.", ex);
+        }
       }
     }
 
