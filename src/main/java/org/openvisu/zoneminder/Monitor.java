@@ -13,7 +13,12 @@ public class Monitor extends ZMBaseObject
   {
     return super.getValue("Name");
   }
-  
+
+  public MonitorFunction getFunction()
+  {
+    return MonitorFunction.get(getValue("Function"));
+  }
+
   @Override
   public String toString()
   {
