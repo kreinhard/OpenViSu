@@ -10,7 +10,7 @@
     </parent>
 
     <groupId>org.openvisu</groupId>
-    <artifactId>open-vi-su</artifactId>
+    <artifactId>openvisu</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>war</packaging>
     <name>OpenViSu</name>
