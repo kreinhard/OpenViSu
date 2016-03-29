@@ -106,7 +106,12 @@ public class ZMApiRepository
   {
     if (configMap == null) {
       Map<String, ZMConfig> newConfigMap = new HashMap<>();
-      String json = session.httpGet("api/configs.json");
+      String json;
+      if (session.isTestMode() == true) {
+        json = session.readFile("zoneminder-config-json.txt");
+      } else {
+        json = session.httpGet("api/configs.json");
+      }
       Json2MapReader jsonReader = new Json2MapReader(json);
       List<Map<String, ? >> configObjects = jsonReader.getList("configs");
       if (configObjects != null && configObjects.isEmpty() == false) {
@@ -213,7 +218,11 @@ public class ZMApiRepository
   public ZMEvent getEvent(String eventId)
   {
     String json;
-    json = session.httpGet("api/events/" + eventId + ".json");
+    if (session.isTestMode() == true) {
+      json = session.readFile("zoneminder-event-with-frames-json.txt");
+    } else {
+      json = session.httpGet("api/events/" + eventId + ".json");
+    }
     Json2MapReader jsonReader = new Json2MapReader(json);
     @SuppressWarnings("unchecked")
     Map<String, String> eventObject = (Map<String, String>) jsonReader.getMap("event", "Event");

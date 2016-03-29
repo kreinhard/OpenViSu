@@ -19,6 +19,11 @@ public class ZMFrame extends ZMBaseObject
     return ZMFrameType.get(getValue("Type"));
   }
 
+  public int getScore()
+  {
+    return getIntValue("Score");
+  }
+
   @Override
   public String toString()
   {

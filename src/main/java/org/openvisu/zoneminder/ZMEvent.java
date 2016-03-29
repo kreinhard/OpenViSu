@@ -45,7 +45,7 @@ public class ZMEvent extends ZMBaseObject
     return super.getValue("Name");
   }
 
-  public int getAlarmFrames()
+  public int getNumberOfAlarmFrames()
   {
     if (alarmFrames == -1) {
       alarmFrames = getIntValue("AlarmFrames");
@@ -76,7 +76,7 @@ public class ZMEvent extends ZMBaseObject
       sb.append("*New*");
     }
     sb.append("Event #").append(getId()).append(" - ").append(getName()).append(", monitorId=").append(getMonitorId())
-        .append(", alarmFrames=").append(getAlarmFrames());
+        .append(", alarmFrames=").append(getNumberOfAlarmFrames());
     return sb.toString();
   }
 }

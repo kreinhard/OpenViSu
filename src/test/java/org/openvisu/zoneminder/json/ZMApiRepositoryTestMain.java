@@ -50,7 +50,7 @@ public class ZMApiRepositoryTestMain
       log.info("" + events.size() + " events read for all monitors (" + getNumberOfNewEvents(events) + " new events)");
       int counter = 0;
       for (ZMEvent event : events) {
-        if (event.getAlarmFrames() > 0) {
+        if (event.getNumberOfAlarmFrames() > 0) {
           log.info("Event with alarms: " + event);
           repo.getEvent(event.getId());
           // for (ZMFrame frame : event.getFrames()) {
