@@ -14,7 +14,7 @@ import org.openvisu.zoneminder.ZMMonitor;
  */
 public class ZMApiRepositoryTestMain
 {
-   private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(ZMApiRepositoryTestMain.class);
+  private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(ZMApiRepositoryTestMain.class);
 
   /**
    * Main method.
@@ -31,27 +31,50 @@ public class ZMApiRepositoryTestMain
     session.authenticate(user, password);
     ZMApiRepository repo = new ZMApiRepository(session);
     List<ZMMonitor> monitors = repo.getMonitors();
-    log.info("Number of read monitors: " + (monitors != null ? monitors.size() : 0));
+    int numberOfMonitors = monitors != null ? monitors.size() : 0;
+    log.info("Number of read monitors: " + numberOfMonitors);
+    if (numberOfMonitors > 0) {
+      ZMMonitor monitor = monitors.get(0);
+      if (monitor.getId() == null) {
+        log.error("******* Oups, monitorId is null for monitor: " + monitor);
+      }
+      List<ZMEvent> events = repo.getAllEvents(monitor.getId());
+      log.info("" + events.size() + " events read for monitor: " + monitor + " (" + getNumberOfNewEvents(events) + " new events)");
+    }
     ZMConfig config = repo.getConfig("ZM_WEB_EVENTS_PER_PAGE");
     log.info("Config parameter WEB_EVENTS_PER_PAGE=" + config.getIntValue());
-    List<ZMEvent> events = repo.getEvents();
-    int counter = 0;
-    for (ZMEvent event : events) {
-      if (event.getAlarmFrames() > 0) {
-        log.info("Event with alarms: " + event);
-        repo.getEvent(event.getId());
-        // for (ZMFrame frame : event.getFrames()) {
-        // if ("Alarm".equals(frame.getValue("Type")) == true) {
-        // log.info("Frame" + frame);
-        // }
-        // }
-        if (++counter >= 5) {
-          // get only frames of the first 5 events
-          break;
+    {
+      List<ZMEvent> events = repo.getAllEvents();
+      log.info("" + events.size() + " events read for all monitors (" + getNumberOfNewEvents(events) + " new events)");
+      int counter = 0;
+      for (ZMEvent event : events) {
+        if (event.getAlarmFrames() > 0) {
+          log.info("Event with alarms: " + event);
+          repo.getEvent(event.getId());
+          // for (ZMFrame frame : event.getFrames()) {
+          // if ("Alarm".equals(frame.getValue("Type")) == true) {
+          // log.info("Frame" + frame);
+          // }
+          // }
+          if (++counter >= 5) {
+            // get only frames of the first 5 events
+            break;
+          }
         }
       }
     }
     session.closeQuietly();
     // https://debian/zm/events/1/16/03/27/23/40/00/00517-analyse.jpg
+  }
+
+  private static int getNumberOfNewEvents(List<ZMEvent> events)
+  {
+    int numberOfNewEvents = 0;
+    for (ZMEvent event : events) {
+      if (event.isNewEvent() == true) {
+        numberOfNewEvents++;
+      }
+    }
+    return numberOfNewEvents;
   }
 }

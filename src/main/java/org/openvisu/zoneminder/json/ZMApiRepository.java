@@ -42,7 +42,7 @@ public class ZMApiRepository
       if (monitorObjects != null && monitorObjects.isEmpty() == false) {
         for (Map<String, ? > obj : monitorObjects) {
           @SuppressWarnings("unchecked")
-          ZMMonitor monitor = new ZMMonitor((Map<String, String>) obj);
+          ZMMonitor monitor = new ZMMonitor((Map<String, String>) obj.get("Monitor"));
           newMonitors.add(monitor);
         }
       }
@@ -106,10 +106,19 @@ public class ZMApiRepository
     return this;
   }
 
-  public List<ZMEvent> getEvents()
+  public List<ZMEvent> getAllEvents()
   {
-    String json;
-    json = session.httpGet("api/events.json?page=1");
+    return getEvents("api/events.json");
+  }
+
+  public List<ZMEvent> getAllEvents(String monitorId)
+  {
+    return getEvents("api/events/index/MonitorId:" + monitorId + ".json");
+  }
+
+  private List<ZMEvent> getEvents(String url)
+  {
+    String json = session.httpGet(url + "?page=1");
     int pageCount = 1;
     JsonReader jsonReader = new JsonReader(json);
     Map<String, ? > pagination = (Map<String, ? >) jsonReader.getMap("pagination");
@@ -119,9 +128,9 @@ public class ZMApiRepository
       log.warn("Can't read any events (parameter pageCount expected but not given.", ex);
     }
     int current = 1;
-    List<Map<String, ? >> eventObjects = jsonReader.getList("events");
     List<ZMEvent> events = new ArrayList<>();
     do {
+      List<Map<String, ? >> eventObjects = jsonReader.getList("events");
       if (eventObjects != null && eventObjects.isEmpty() == false) {
         for (Object obj : eventObjects) {
           @SuppressWarnings("unchecked")
@@ -135,7 +144,8 @@ public class ZMApiRepository
       if (++current > pageCount) {
         break;
       }
-      json = session.httpGet("api/events.json?page=" + current);
+      json = session.httpGet(url + "?page=" + current);
+      jsonReader = new JsonReader(json);
     } while (true);
     log.info("Read " + events.size() + " events from server.");
     return events;

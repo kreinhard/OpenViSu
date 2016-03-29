@@ -6,7 +6,9 @@ import java.util.Map;
 public class ZMEvent extends ZMBaseObject
 {
   private int alarmFrames = -1;
-  
+
+  private boolean newEvent;
+
   private ZMMonitor monitor;
 
   private List<ZMFrame> frames;
@@ -14,6 +16,17 @@ public class ZMEvent extends ZMBaseObject
   public ZMEvent(Map<String, String> map)
   {
     super(map);
+    if ("New Event".equals(getName()) == true) {
+      newEvent = true;
+    }
+  }
+
+  /**
+   * New events are events of the server, whose frames aren't yet finished. Those events are current built events.
+   */
+  public boolean isNewEvent()
+  {
+    return newEvent;
   }
 
   public ZMEvent setFrames(List<ZMFrame> frames)
@@ -44,19 +57,26 @@ public class ZMEvent extends ZMBaseObject
   {
     return getValue("MonitorId");
   }
-  
-  public ZMMonitor getMonitor() {
+
+  public ZMMonitor getMonitor()
+  {
     return monitor;
   }
-  
+
   public void setMonitor(ZMMonitor monitor)
   {
     this.monitor = monitor;
   }
-  
+
   @Override
   public String toString()
   {
-    return "Event #" + getId() + " - " + getName() + ", monitorId=" + getMonitorId() + ", alarmFrames=" + getAlarmFrames();
+    StringBuilder sb = new StringBuilder();
+    if (newEvent == true) {
+      sb.append("*New*");
+    }
+    sb.append("Event #").append(getId()).append(" - ").append(getName()).append(", monitorId=").append(getMonitorId())
+        .append(", alarmFrames=").append(getAlarmFrames());
+    return sb.toString();
   }
 }
