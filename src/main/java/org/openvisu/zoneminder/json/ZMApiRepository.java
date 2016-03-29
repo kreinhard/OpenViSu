@@ -25,8 +25,6 @@ public class ZMApiRepository
 
   private List<ZMMonitor> monitors;
 
-  private List<ZMZone> zones;
-
   public ZMApiRepository(ZMClientSession session)
   {
     this.session = session;
@@ -77,6 +75,29 @@ public class ZMApiRepository
     }
     return null;
   }
+  
+  public List<ZMZone> getZones()
+  {
+    throw new UnsupportedOperationException("Not yet implemented.");
+    // if (zones == null) {
+    // String json;
+    // json = session.httpGet("api/zones.json");
+    // JsonReader jsonReader = new JsonReader(json);
+    // List<Map<String, ? >> zoneObjects = jsonReader.getList("data");
+    //
+    // ArrayList<ZMZone> newZones = new ArrayList<>();
+    // if (zoneObjects != null && zoneObjects.isEmpty() == false) {
+    // for (Map<String, ? > obj : zoneObjects) {
+    // @SuppressWarnings("unchecked")
+    // ZMZone zone = new ZMZone((Map<String, String>) obj); // Doesn't work yet: Map of maps.
+    // newZones.add(zone);
+    // }
+    // }
+    // zones = newZones;
+    // }
+    // return zones;
+  }
+
 
   public ZMConfig getConfig(String name)
   {
