@@ -36,15 +36,17 @@ public class ZMApiRepository
       String json;
       json = session.httpGet("api/monitors.json");
       JsonReader jsonReader = new JsonReader(json);
-      List<Object> monitorObjects = jsonReader.getList("monitors");
+      List<Map<String, ? >> monitorObjects = jsonReader.getList("monitors");
 
-      monitors = new ArrayList<>();
+      ArrayList<ZMMonitor> newMonitors = new ArrayList<>();
       if (monitorObjects != null && monitorObjects.isEmpty() == false) {
-        for (Object obj : monitorObjects) {
-          ZMMonitor monitor = new ZMMonitor((Map) obj);
-          monitors.add(monitor);
+        for (Map<String, ? > obj : monitorObjects) {
+          @SuppressWarnings("unchecked")
+          ZMMonitor monitor = new ZMMonitor((Map<String, String>) obj);
+          newMonitors.add(monitor);
         }
       }
+      monitors = newMonitors;
     }
     return monitors;
   }
@@ -59,20 +61,37 @@ public class ZMApiRepository
     return this;
   }
 
+  /**
+   * Monitors are cached. If you want to get the current state of the monitor, please call {@link #refreshMonitors()} before.
+   * @param monitorId
+   * @return monitor read by {@link #getMonitors()} before.
+   */
+  public ZMMonitor getMonitor(String monitorId)
+  {
+    for (ZMMonitor monitor : getMonitors()) {
+      if (monitorId.equals(monitor.getId()) == true) {
+        return monitor;
+      }
+    }
+    return null;
+  }
+
   public ZMConfig getConfig(String name)
   {
     if (configMap == null) {
-      configMap = new HashMap<>();
+      Map<String, ZMConfig> newConfigMap = new HashMap<>();
       String json = session.httpGet("api/configs.json");
       JsonReader jsonReader = new JsonReader(json);
-      List<Object> configObjects = jsonReader.getList("configs");
+      List<Map<String, ? >> configObjects = jsonReader.getList("configs");
       if (configObjects != null && configObjects.isEmpty() == false) {
         for (Object obj : configObjects) {
-          Map map = (Map) ((Map) obj).get("Config");
+          @SuppressWarnings("unchecked")
+          Map<String, String> map = (Map<String, String>) ((Map<String, ? >) obj).get("Config");
           ZMConfig config = new ZMConfig(map);
-          configMap.put(config.getName(), config);
+          newConfigMap.put(config.getName(), config);
         }
       }
+      configMap = newConfigMap;
     }
     return configMap.get(name);
   }
@@ -93,20 +112,23 @@ public class ZMApiRepository
     json = session.httpGet("api/events.json?page=1");
     int pageCount = 1;
     JsonReader jsonReader = new JsonReader(json);
-    Map<String, Object> pagination = (Map) jsonReader.getMap("pagination");
+    Map<String, ? > pagination = (Map<String, ? >) jsonReader.getMap("pagination");
     try {
       pageCount = (int) pagination.get("pageCount");
     } catch (Exception ex) {
       log.warn("Can't read any events (parameter pageCount expected but not given.", ex);
     }
     int current = 1;
-    List<Object> eventObjects = jsonReader.getList("events");
+    List<Map<String, ? >> eventObjects = jsonReader.getList("events");
     List<ZMEvent> events = new ArrayList<>();
     do {
       if (eventObjects != null && eventObjects.isEmpty() == false) {
         for (Object obj : eventObjects) {
-          Map<String, Object> map = (Map) obj;
-          ZMEvent event = new ZMEvent((Map) map.get("Event"));
+          @SuppressWarnings("unchecked")
+          Map<String, Object> map = (Map<String, Object>) obj;
+          @SuppressWarnings("unchecked")
+          ZMEvent event = new ZMEvent((Map<String, String>) map.get("Event"));
+          event.setMonitor(getMonitor(event.getMonitorId()));
           events.add(event);
         }
       }
@@ -124,14 +146,17 @@ public class ZMApiRepository
     String json;
     json = session.httpGet("api/events/" + eventId + ".json");
     JsonReader jsonReader = new JsonReader(json);
-    Map<String, String> eventObject = (Map) jsonReader.getMap("event", "Event");
+    @SuppressWarnings("unchecked")
+    Map<String, String> eventObject = (Map<String, String>) jsonReader.getMap("event", "Event");
     ZMEvent event = new ZMEvent(eventObject);
-    List<Object> frameObjects = jsonReader.getList("event", "Frame");
+    event.setMonitor(getMonitor(event.getMonitorId()));
+    List<Map<String, ? >> frameObjects = jsonReader.getList("event", "Frame");
     List<ZMFrame> frames = new ArrayList<>();
     int alarmCounter = 0;
     if (CollectionUtils.isEmpty(frameObjects) == false) {
-      for (Object obj : frameObjects) {
-        ZMFrame frame = new ZMFrame((Map) obj);
+      for (Map<String, ? > obj : frameObjects) {
+        @SuppressWarnings("unchecked")
+        ZMFrame frame = new ZMFrame((Map<String, String>) obj);
         if (frame.getType() == ZMFrameType.ALARM) {
           alarmCounter++;
         }

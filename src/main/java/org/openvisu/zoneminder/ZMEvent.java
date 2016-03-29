@@ -6,6 +6,8 @@ import java.util.Map;
 public class ZMEvent extends ZMBaseObject
 {
   private int alarmFrames = -1;
+  
+  private ZMMonitor monitor;
 
   private List<ZMFrame> frames;
 
@@ -42,7 +44,16 @@ public class ZMEvent extends ZMBaseObject
   {
     return getValue("MonitorId");
   }
-
+  
+  public ZMMonitor getMonitor() {
+    return monitor;
+  }
+  
+  public void setMonitor(ZMMonitor monitor)
+  {
+    this.monitor = monitor;
+  }
+  
   @Override
   public String toString()
   {

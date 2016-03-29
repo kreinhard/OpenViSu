@@ -21,7 +21,8 @@ public class JsonReader
     return map;
   }
 
-  public List<Object> getList(String... path)
+  @SuppressWarnings({ "rawtypes", "unchecked"})
+  public List<Map<String, ?>> getList(String... path)
   {
     Object current = map;
     for (String el : path) {
@@ -36,15 +37,16 @@ public class JsonReader
             "Can't get element '" + el + "' from json string because parent object isn't a map: " + current.getClass());
       }
     }
-    return (List<Object>)current;
+    return (List<Map<String, ?>>)current;
   }
 
-  public Map<String, String> getMap(String... path)
+  @SuppressWarnings("unchecked")
+  public Map<String, ?> getMap(String... path)
   {
     Object current = map;
     for (String el : path) {
       if (current instanceof Map) {
-        current = ((Map) current).get(el);
+        current = ((Map<String, ?>) current).get(el);
         if (current == null) {
           throw new RuntimeException(
               "Can't get element '" + el + "' from json string because element isn't part of the map.");
@@ -54,6 +56,6 @@ public class JsonReader
             "Can't get element '" + el + "' from json string because parent object isn't a map: " + current.getClass());
       }
     }
-    return (Map<String, String>)current;
+    return (Map<String, ?>)current;
   }
 }

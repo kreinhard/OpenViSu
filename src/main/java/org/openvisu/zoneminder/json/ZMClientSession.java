@@ -29,6 +29,10 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
+/**
+ * TODO: Reconnect (after time out, server restart etc.).
+ * @author kai
+ */
 public class ZMClientSession
 {
   private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(ZMClientSession.class);
