@@ -38,4 +38,22 @@ public class JsonReader
     }
     return (List<Object>)current;
   }
+
+  public Map<String, String> getMap(String... path)
+  {
+    Object current = map;
+    for (String el : path) {
+      if (current instanceof Map) {
+        current = ((Map) current).get(el);
+        if (current == null) {
+          throw new RuntimeException(
+              "Can't get element '" + el + "' from json string because element isn't part of the map.");
+        }
+      } else {
+        throw new RuntimeException(
+            "Can't get element '" + el + "' from json string because parent object isn't a map: " + current.getClass());
+      }
+    }
+    return (Map<String, String>)current;
+  }
 }

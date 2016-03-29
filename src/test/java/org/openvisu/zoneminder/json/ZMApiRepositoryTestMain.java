@@ -35,15 +35,20 @@ public class ZMApiRepositoryTestMain
     ZMConfig config = repo.getConfig("ZM_WEB_EVENTS_PER_PAGE");
     log.info("Config parameter WEB_EVENTS_PER_PAGE=" + config.getIntValue());
     List<ZMEvent> events = repo.getEvents();
+    int counter = 0;
     for (ZMEvent event : events) {
       if (event.getAlarmFrames() > 0) {
         log.info("Event with alarms: " + event);
-        repo.readFrames(event);
+        repo.getEvent(event.getId());
         // for (ZMFrame frame : event.getFrames()) {
         // if ("Alarm".equals(frame.getValue("Type")) == true) {
         // log.info("Frame" + frame);
         // }
         // }
+        if (++counter >= 5) {
+          // get only frames of the first 5 events
+          break;
+        }
       }
     }
     session.closeQuietly();

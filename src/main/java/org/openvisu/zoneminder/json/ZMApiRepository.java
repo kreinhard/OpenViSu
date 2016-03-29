@@ -10,6 +10,7 @@ import org.openvisu.zoneminder.ZMEvent;
 import org.openvisu.zoneminder.ZMFrame;
 import org.openvisu.zoneminder.ZMFrameType;
 import org.openvisu.zoneminder.ZMMonitor;
+import org.openvisu.zoneminder.ZMZone;
 import org.springframework.util.CollectionUtils;
 
 public class ZMApiRepository
@@ -22,7 +23,7 @@ public class ZMApiRepository
 
   private List<ZMMonitor> monitors;
 
-  private List<ZMEvent> events;
+  private List<ZMZone> zones;
 
   public ZMApiRepository(ZMClientSession session)
   {
@@ -88,53 +89,43 @@ public class ZMApiRepository
 
   public List<ZMEvent> getEvents()
   {
-    if (events == null) {
-      String json;
-      json = session.httpGet("api/events.json?page=1");
-      int pageCount = 1;
-      JsonReader jsonReader = new JsonReader(json);
-      Map<String, Object> pagination = (Map) jsonReader.getMap().get("pagination");
-      try {
-        pageCount = (int)pagination.get("pageCount");
-      } catch (Exception ex) {
-        log.warn("Can't read any events (parameter pageCount expected but not given.", ex);
-      }
-      int current = 1;
-      List<Object> eventObjects = jsonReader.getList("events");
-      events = new ArrayList<>();
-      do {
-        if (eventObjects != null && eventObjects.isEmpty() == false) {
-          for (Object obj : eventObjects) {
-            Map<String, Object> map = (Map) obj;
-            ZMEvent event = new ZMEvent((Map) map.get("Event"));
-            events.add(event);
-          }
-        }
-        if (++current > pageCount) {
-          break;
-        }
-        json = session.httpGet("api/events.json?page=" + current);
-      } while (true);
+    String json;
+    json = session.httpGet("api/events.json?page=1");
+    int pageCount = 1;
+    JsonReader jsonReader = new JsonReader(json);
+    Map<String, Object> pagination = (Map) jsonReader.getMap("pagination");
+    try {
+      pageCount = (int) pagination.get("pageCount");
+    } catch (Exception ex) {
+      log.warn("Can't read any events (parameter pageCount expected but not given.", ex);
     }
+    int current = 1;
+    List<Object> eventObjects = jsonReader.getList("events");
+    List<ZMEvent> events = new ArrayList<>();
+    do {
+      if (eventObjects != null && eventObjects.isEmpty() == false) {
+        for (Object obj : eventObjects) {
+          Map<String, Object> map = (Map) obj;
+          ZMEvent event = new ZMEvent((Map) map.get("Event"));
+          events.add(event);
+        }
+      }
+      if (++current > pageCount) {
+        break;
+      }
+      json = session.httpGet("api/events.json?page=" + current);
+    } while (true);
     log.info("Read " + events.size() + " events from server.");
     return events;
   }
 
-  /**
-   * Force reload of events from ZoneMinder.
-   * @return this for fluent usage.
-   */
-  public ZMApiRepository refreshEvents()
-  {
-    this.events = null;
-    return this;
-  }
-
-  public void readFrames(ZMEvent event)
+  public ZMEvent getEvent(String eventId)
   {
     String json;
-    json = session.httpGet("api/events/" + event.getId() + ".json");
+    json = session.httpGet("api/events/" + eventId + ".json");
     JsonReader jsonReader = new JsonReader(json);
+    Map<String, String> eventObject = (Map) jsonReader.getMap("event", "Event");
+    ZMEvent event = new ZMEvent(eventObject);
     List<Object> frameObjects = jsonReader.getList("event", "Frame");
     List<ZMFrame> frames = new ArrayList<>();
     int alarmCounter = 0;
@@ -149,5 +140,6 @@ public class ZMApiRepository
     }
     log.info("Number of read frames: " + frames.size() + " with " + alarmCounter + " alarms.");
     event.setFrames(frames);
+    return event;
   }
 }
