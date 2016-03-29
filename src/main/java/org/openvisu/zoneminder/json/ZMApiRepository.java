@@ -1,6 +1,8 @@
 package org.openvisu.zoneminder.json;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -111,9 +113,33 @@ public class ZMApiRepository
     return getEvents("api/events.json");
   }
 
+  /**
+   * StartTime >=:from UND StartTime <=: until
+   * @param from
+   * @param until
+   * @return
+   */
+  public List<ZMEvent> getEvents(Date from, Date until)
+  {
+    return getEvents("api/events/index" + getDateParams(from, until) + ".json");
+  }
+
   public List<ZMEvent> getAllEvents(String monitorId)
   {
     return getEvents("api/events/index/MonitorId:" + monitorId + ".json");
+  }
+
+  public List<ZMEvent> getEvents(String monitorId, Date from, Date until)
+  {
+    return getEvents("api/events/index/MonitorId:" + monitorId + getDateParams(from, until) + ".json");
+  }
+
+  private String getDateParams(Date from, Date until)
+  {
+    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd%20HH:mm:ss");
+    String startTimeString = format.format(from); // "2016-03-28%2000:00:00";
+    String endTimeString = format.format(until); // "2016-03-28%2023:59:59";
+    return "/StartTime%20%3E=:" + startTimeString + "/StartTime%20%3C=:" + endTimeString;
   }
 
   private List<ZMEvent> getEvents(String url)

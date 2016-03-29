@@ -1,6 +1,8 @@
 package org.openvisu.zoneminder.json;
 
 import java.io.IOException;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.openvisu.OpenVisuConfig;
@@ -61,6 +63,19 @@ public class ZMApiRepositoryTestMain
             break;
           }
         }
+      }
+      Calendar cal = Calendar.getInstance();
+      cal.clear();
+      cal.set(2016, Calendar.MARCH, 28, 0, 0, 0);
+      Date from = cal.getTime();
+      cal.set(2016, Calendar.MARCH, 28, 23, 59, 59);
+      Date until = cal.getTime();
+      events = repo.getEvents(from, until);
+      log.info("" + events.size() + " events read for all monitors (" + getNumberOfNewEvents(events) + " new events)");
+      if (numberOfMonitors > 0) {
+        ZMMonitor monitor = monitors.get(0);
+        events = repo.getEvents(monitor.getId(), from, until);
+        log.info("" + events.size() + " events read for monitor: " + monitor + " (" + getNumberOfNewEvents(events) + " new events)");
       }
     }
     session.closeQuietly();
