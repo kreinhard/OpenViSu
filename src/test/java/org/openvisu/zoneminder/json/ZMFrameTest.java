@@ -1,21 +1,12 @@
 package org.openvisu.zoneminder.json;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
-import org.openvisu.zoneminder.ZMConfig;
-import org.openvisu.zoneminder.ZMEvent;
 import org.openvisu.zoneminder.ZMFrame;
-import org.openvisu.zoneminder.ZMFrameType;
-import org.openvisu.zoneminder.ZMMonitor;
-import org.openvisu.zoneminder.ZMMonitorFunction;
 
 public class ZMFrameTest
 {

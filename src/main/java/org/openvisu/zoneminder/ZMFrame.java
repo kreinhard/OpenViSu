@@ -5,6 +5,20 @@ import java.util.Map;
 public class ZMFrame extends ZMBaseObject
 {
   private int frameId = -1;
+  
+  public static String getFormattedFrameId(int frameId) {
+    if (frameId < 10) {
+      return "0000" + frameId;
+    } else if (frameId < 100) {
+      return "000" + frameId;
+    } else if (frameId < 1000) {
+      return "00" + frameId;
+    } else if (frameId < 10000) {
+      return "0" + frameId;
+    } else {
+      return String.valueOf(frameId);
+    }
+  }
 
   public ZMFrame(Map<String, String> map)
   {
@@ -25,17 +39,7 @@ public class ZMFrame extends ZMBaseObject
    */
   public String getFormattedFrameId()
   {
-    if (getFrameId() < 10) {
-      return "0000" + frameId;
-    } else if (frameId < 100) {
-      return "000" + frameId;
-    } else if (frameId < 1000) {
-      return "00" + frameId;
-    } else if (frameId < 10000) {
-      return "0" + frameId;
-    } else {
-      return String.valueOf(frameId);
-    }
+    return getFormattedFrameId(getFrameId());
   }
 
   public ZMFrameType getType()

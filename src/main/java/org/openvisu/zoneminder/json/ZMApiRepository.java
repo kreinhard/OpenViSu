@@ -13,6 +13,7 @@ import org.openvisu.zoneminder.ZMEvent;
 import org.openvisu.zoneminder.ZMFrame;
 import org.openvisu.zoneminder.ZMFrameType;
 import org.openvisu.zoneminder.ZMImage;
+import org.openvisu.zoneminder.ZMImageType;
 import org.openvisu.zoneminder.ZMMonitor;
 import org.openvisu.zoneminder.ZMZone;
 import org.springframework.util.CollectionUtils;
@@ -270,22 +271,27 @@ public class ZMApiRepository
     StringBuilder sb = new StringBuilder();
     buildImagePath(event, sb);
     String baseFilename = sb.toString();
-    int imageCounter = -1;
-    boolean bulk = false;
+    int imageCounter = 1;
     for (ZMFrame frame : event.getFrames()) {
       int frameId = frame.getFrameId();
-      if (bulk == true) {
-        // Generate all frames of last bulk:
-        while (++imageCounter < frameId) {
-          ZMImage image = new ZMImage(baseFilename, event, frame);
+      if (frame.getType() == ZMFrameType.BULK) {
+        log.info("Read bulk with frameId: " + frameId);
+        // Generate all frames of this bulk:
+        while (imageCounter < frameId) {
+          ZMImage image = new ZMImage(baseFilename, event, frame, ZMImageType.CAPTURE, ZMFrame.getFormattedFrameId(imageCounter++));
           images.add(image);
+          log.info("Add bulk-image: " + imageCounter);
         }
+      } else {
+        imageCounter = frameId;
+        ZMImage image = new ZMImage(baseFilename, event, frame, ZMImageType.CAPTURE, ZMFrame.getFormattedFrameId(imageCounter++));
+        images.add(image);
+        log.info("Add image: " + imageCounter);
       }
-      imageCounter = frameId;
-      ZMImage image = new ZMImage(baseFilename, event, frame);
-      images.add(image);
-      bulk = frame.getType() == ZMFrameType.BULK;
-      // Bulk frame has always successor frame!
+      // if (frame.getType() == ZMFrameType.ALARM) {
+      // ZMImage image = new ZMImage(baseFilename, event, frame, ZMImageType.ANALYSE, ZMFrame.getFormattedFrameId(imageCounter));
+      // images.add(image);
+      // }
     }
     return images;
   }
