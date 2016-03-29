@@ -34,7 +34,11 @@ public class ZMApiRepository
   {
     if (monitors == null) {
       String json;
-      json = session.httpGet("api/monitors.json");
+      if (session.isTestMode() == true) {
+        json = session.readFile("zoneminder-monitors-json.txt");
+      } else {
+        json = session.httpGet("api/monitors.json");
+      }
       Json2MapReader jsonReader = new Json2MapReader(json);
       List<Map<String, ? >> monitorObjects = jsonReader.getList("monitors");
 
@@ -75,7 +79,7 @@ public class ZMApiRepository
     }
     return null;
   }
-  
+
   public List<ZMZone> getZones()
   {
     throw new UnsupportedOperationException("Not yet implemented.");
@@ -97,7 +101,6 @@ public class ZMApiRepository
     // }
     // return zones;
   }
-
 
   public ZMConfig getConfig(String name)
   {
@@ -165,7 +168,12 @@ public class ZMApiRepository
 
   private List<ZMEvent> getEvents(String url)
   {
-    String json = session.httpGet(url + "?page=1");
+    String json;
+    if (session.isTestMode() == true) {
+      json = session.readFile("zoneminder-events-json?page=1.txt");
+    } else {
+      json = session.httpGet(url + "?page=1");
+    }
     int pageCount = 1;
     Json2MapReader jsonReader = new Json2MapReader(json);
     Map<String, ? > pagination = (Map<String, ? >) jsonReader.getMap("pagination");
@@ -191,7 +199,11 @@ public class ZMApiRepository
       if (++current > pageCount) {
         break;
       }
-      json = session.httpGet(url + "?page=" + current);
+      if (session.isTestMode() == true) {
+        json = session.readFile("zoneminder-events-json?page=" + current + ".txt");
+      } else {
+        json = session.httpGet(url + "?page=" + current);
+      }
       jsonReader = new Json2MapReader(json);
     } while (true);
     log.info("Read " + events.size() + " events from server.");

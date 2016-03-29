@@ -1,5 +1,6 @@
 package org.openvisu.zoneminder.json;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.KeyManagementException;
@@ -12,6 +13,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.CookieStore;
@@ -47,10 +49,17 @@ public class ZMClientSession
 
   private boolean authorized;
 
+  private boolean testMode;
+
   public ZMClientSession(String url)
   {
     this.baseUrl = url;
-    if (url.startsWith("https") == true) {
+    if (url.startsWith("file://") == true) {
+      this.baseUrl = url.replace("file:/", System.getProperty("user.dir"));
+      log.info("Initialization with file data (should only be used for test cases!");
+      authorized = true; // File system needs no authorization.
+      testMode = true;
+    } else if (url.startsWith("https://") == true) {
       // Create a trust manager that does not validate certificate chains
       TrustManager[] trustAllCerts = new TrustManager[] { new TrustAllManager()};
 
@@ -76,8 +85,6 @@ public class ZMClientSession
         }
       };
       sslsf = new SSLConnectionSocketFactory(sslContext, new String[] { "TLSv1"}, null, allHostsValid);
-    } else {
-      sslsf = null;
     }
   }
 
@@ -109,6 +116,21 @@ public class ZMClientSession
     log.info("Authentication for user '" + username + "' was sucessful.");
     authorized = true;
     return true;
+  }
+
+  public String readFile(String path)
+  {
+    if (testMode == false) {
+      throw new RuntimeException("Should only be called for test cases");
+    }
+    File file = new File(baseUrl, path);
+    try {
+      String content = FileUtils.readFileToString(file);
+      return content;
+    } catch (IOException e) {
+      log.error("Error while reading from file '" + file.getAbsolutePath() + "': " + e.getMessage(), e);
+      return "";
+    }
   }
 
   public String restCall(String path)
@@ -158,6 +180,11 @@ public class ZMClientSession
       throw new RuntimeException("Ignoring call, because user not authorized: " + url);
     }
     return internalHttpPost(url, params);
+  }
+
+  public boolean isTestMode()
+  {
+    return testMode;
   }
 
   private String internalHttpPost(String url, NameValuePair... params)
