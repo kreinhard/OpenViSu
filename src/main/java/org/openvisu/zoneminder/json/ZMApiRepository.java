@@ -248,6 +248,11 @@ public class ZMApiRepository
     return event;
   }
 
+  public List<ZMImage> readImages(String eventId)
+  {
+    return readImages(getEvent(eventId));
+  }
+
   /**
    * Event with frames or without. If no frames are given, the frames will be get.
    * @param event
@@ -258,13 +263,31 @@ public class ZMApiRepository
       event = getEvent(event.getId());
     }
     List<ZMImage> images = new LinkedList<>();
-    String path = getImagePath(event);
+    if (event.getFrames() == null) {
+      log.warn("Event '" + event.getId() + "' has no frames!?");
+      return images;
+    }
+    StringBuilder sb = new StringBuilder();
+    buildImagePath(event, sb);
+    String baseFilename = sb.toString();
+    int imageCounter = -1;
+    boolean bulk = false;
+    for (ZMFrame frame : event.getFrames()) {
+      int frameId = frame.getFrameId();
+      if (bulk == true) {
+        // Generate all frames of last bulk:
+        while (++imageCounter < frameId) {
+          ZMImage image = new ZMImage(baseFilename, event, frame);
+          images.add(image);
+        }
+      }
+      imageCounter = frameId;
+      ZMImage image = new ZMImage(baseFilename, event, frame);
+      images.add(image);
+      bulk = frame.getType() == ZMFrameType.BULK;
+      // Bulk frame has always successor frame!
+    }
     return images;
-  }
-
-  public List<ZMImage> readImages(String eventId)
-  {
-    return readImages(getEvent(eventId));
   }
 
   /**
@@ -283,6 +306,12 @@ public class ZMApiRepository
   String getImagePath(ZMEvent event)
   {
     StringBuilder sb = new StringBuilder();
+    buildImagePath(event, sb);
+    return sb.toString();
+  }
+
+  private void buildImagePath(ZMEvent event, StringBuilder sb)
+  {
     sb.append(event.getMonitorId()).append("/");
     // 2016-03-29 18:20:00 -> 16/03/29/18/20/00
     char[] startTime = event.getValue("StartTime").toCharArray(); // yyyy-MM-dd HH:mm:ss
@@ -292,6 +321,5 @@ public class ZMApiRepository
         .append(startTime[11]).append(startTime[12]).append('/') // HH
         .append(startTime[14]).append(startTime[15]).append('/') // mm
         .append(startTime[17]).append(startTime[18]).append('/'); // ss
-    return sb.toString();
   }
 }
