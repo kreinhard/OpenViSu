@@ -1,0 +1,29 @@
+Reverse-engineering:
+--------------------
+(baseurl)/zm/events/(monitorId)/(yy)/(MM)/(dd)/(HH)/(mm)/(ss)/(FrameId)-(analyse|capture).jpg
+yy - year: 16 (2016)
+MM - month: 01 (January)
+dd - day of month (01, 02, ...)
+HH - hour of day (00, 01, ..., 23) (start time of event)
+mm - minutes (00, 01, ..., 59) (start time of event)
+ss - seconds (00, 01, ..., 59) (start time of event)
+FrameId - 01002 (5 digits)
+analyse|capture - analyse only for alarms?
+
+Raw-info
+--------
+<h2>Bild 1542-1002 (9)</h2>
+<a href="?view=frame&amp;eid=1542&amp;fid=1002&amp;scale=100&amp;show=capt">
+<img src="events/1/16/03/29/18/20/00/01002-analyse.jpg" width="1280" height="720" alt="1542-1002" class="alarm">
+</a>
+https://debian/zm/index.php?view=frame&eid=1542&fid=1002&scale=100
+https://debian/zm/events/1/16/03/29/18/20/00/01002-analyse.jpg
+https://debian/zm/events/1/16/03/29/18/20/00/01002-capture.jpg
+Firs: https://debian/zm/index.php?view=frame&eid=1542&fid=1&scale=100 (Bild: https://debian/zm/events/1/16/03/29/18/20/00/00001-capture.jpg)
+Last: https://debian/zm/index.php?view=frame&eid=1542&fid=1250&scale=100
+Curr: https://debian/zm/index.php?view=frame&eid=1542&fid=1002&scale=100
+Next: https://debian/zm/index.php?view=frame&eid=1542&fid=1003&scale=100
+Prev: https://debian/zm/index.php?view=frame&eid=1542&fid=1001&scale=100
+    
+Abspielen: https://debian/zm/cgi-bin/nph-zms?source=event&mode=jpeg&event=1542&frame=1&scale=100&rate=100&maxfps=30&replay=all&auth=234430d61670e8cbd21f142e10974670&connkey=600446&rand=1459272698
+Klappt nicht für Alarm-Event :-(
