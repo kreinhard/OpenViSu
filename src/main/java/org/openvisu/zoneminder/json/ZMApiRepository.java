@@ -35,7 +35,7 @@ public class ZMApiRepository
     if (monitors == null) {
       String json;
       json = session.httpGet("api/monitors.json");
-      JsonReader jsonReader = new JsonReader(json);
+      Json2MapReader jsonReader = new Json2MapReader(json);
       List<Map<String, ? >> monitorObjects = jsonReader.getList("monitors");
 
       ArrayList<ZMMonitor> newMonitors = new ArrayList<>();
@@ -104,7 +104,7 @@ public class ZMApiRepository
     if (configMap == null) {
       Map<String, ZMConfig> newConfigMap = new HashMap<>();
       String json = session.httpGet("api/configs.json");
-      JsonReader jsonReader = new JsonReader(json);
+      Json2MapReader jsonReader = new Json2MapReader(json);
       List<Map<String, ? >> configObjects = jsonReader.getList("configs");
       if (configObjects != null && configObjects.isEmpty() == false) {
         for (Object obj : configObjects) {
@@ -167,7 +167,7 @@ public class ZMApiRepository
   {
     String json = session.httpGet(url + "?page=1");
     int pageCount = 1;
-    JsonReader jsonReader = new JsonReader(json);
+    Json2MapReader jsonReader = new Json2MapReader(json);
     Map<String, ? > pagination = (Map<String, ? >) jsonReader.getMap("pagination");
     try {
       pageCount = (int) pagination.get("pageCount");
@@ -192,7 +192,7 @@ public class ZMApiRepository
         break;
       }
       json = session.httpGet(url + "?page=" + current);
-      jsonReader = new JsonReader(json);
+      jsonReader = new Json2MapReader(json);
     } while (true);
     log.info("Read " + events.size() + " events from server.");
     return events;
@@ -202,7 +202,7 @@ public class ZMApiRepository
   {
     String json;
     json = session.httpGet("api/events/" + eventId + ".json");
-    JsonReader jsonReader = new JsonReader(json);
+    Json2MapReader jsonReader = new Json2MapReader(json);
     @SuppressWarnings("unchecked")
     Map<String, String> eventObject = (Map<String, String>) jsonReader.getMap("event", "Event");
     ZMEvent event = new ZMEvent(eventObject);
