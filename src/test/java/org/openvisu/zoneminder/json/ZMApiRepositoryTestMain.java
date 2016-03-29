@@ -11,8 +11,7 @@ import org.openvisu.zoneminder.ZMEvent;
 import org.openvisu.zoneminder.ZMMonitor;
 
 /**
- * Main class.
- *
+ * Main class for testing ZoneMinder API and playing around.
  */
 public class ZMApiRepositoryTestMain
 {
@@ -79,7 +78,6 @@ public class ZMApiRepositoryTestMain
       }
     }
     session.closeQuietly();
-    // https://debian/zm/events/1/16/03/27/23/40/00/00517-analyse.jpg
   }
 
   private static int getNumberOfNewEvents(List<ZMEvent> events)

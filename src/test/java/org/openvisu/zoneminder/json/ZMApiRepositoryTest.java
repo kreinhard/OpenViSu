@@ -75,18 +75,7 @@ public class ZMApiRepositoryTest
   {
     ZMClientSession session = new ZMClientSession("file://src/test/data/zoneminder");
     ZMApiRepository repo = new ZMApiRepository(session);
-    ZMEvent event = createEvent("1542", "MonitorId", "1", "StartTime", "2016-03-29 18:20:00");
-    assertEquals("1/16/03/29/18/20/00/", repo.getImagePath(event));
-  }
-
-  private ZMEvent createEvent(String eventId, String... keyValues)
-  {
-    Map<String, String> map = new HashMap<>();
-    map.put("eventId", eventId);
-    for (int i = 0; i < keyValues.length; i += 2) {
-      map.put(keyValues[i], keyValues[i + 1]);
-    }
-    ZMEvent event = new ZMEvent(map);
-    return event;
+    ZMEvent event = repo.getEvent("Event-50");
+    assertEquals("2/16/03/27/17/00/00/", repo.getImagePath(event));
   }
 }
