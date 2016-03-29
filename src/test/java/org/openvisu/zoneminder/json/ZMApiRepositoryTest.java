@@ -5,7 +5,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 import org.openvisu.zoneminder.ZMConfig;
@@ -68,4 +70,23 @@ public class ZMApiRepositoryTest
     assertEquals(ZMFrameType.ALARM, frame.getType());
   }
 
+  @Test
+  public void getImagePath()
+  {
+    ZMClientSession session = new ZMClientSession("file://src/test/data/zoneminder");
+    ZMApiRepository repo = new ZMApiRepository(session);
+    ZMEvent event = createEvent("1542", "MonitorId", "1", "StartTime", "2016-03-29 18:20:00");
+    assertEquals("1/16/03/29/18/20/00/", repo.getImagePath(event));
+  }
+
+  private ZMEvent createEvent(String eventId, String... keyValues)
+  {
+    Map<String, String> map = new HashMap<>();
+    map.put("eventId", eventId);
+    for (int i = 0; i < keyValues.length; i += 2) {
+      map.put(keyValues[i], keyValues[i + 1]);
+    }
+    ZMEvent event = new ZMEvent(map);
+    return event;
+  }
 }

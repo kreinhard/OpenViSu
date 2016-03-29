@@ -10,6 +10,8 @@ ss - seconds (00, 01, ..., 59) (start time of event)
 FrameId - 01002 (5 digits)
 analyse|capture - analyse only for alarms?
 
+Local image path: /var/cache/zoneminder/events/(monitorId)/...
+
 Raw-info
 --------
 <h2>Bild 1542-1002 (9)</h2>

@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -11,6 +12,7 @@ import org.openvisu.zoneminder.ZMConfig;
 import org.openvisu.zoneminder.ZMEvent;
 import org.openvisu.zoneminder.ZMFrame;
 import org.openvisu.zoneminder.ZMFrameType;
+import org.openvisu.zoneminder.ZMImage;
 import org.openvisu.zoneminder.ZMMonitor;
 import org.openvisu.zoneminder.ZMZone;
 import org.springframework.util.CollectionUtils;
@@ -244,5 +246,52 @@ public class ZMApiRepository
     log.info("Number of read frames: " + frames.size() + " with " + alarmCounter + " alarms.");
     event.setFrames(frames);
     return event;
+  }
+
+  /**
+   * Event with frames or without. If no frames are given, the frames will be get.
+   * @param event
+   */
+  public List<ZMImage> readImages(ZMEvent event)
+  {
+    if (event.getFrames() == null) {
+      event = getEvent(event.getId());
+    }
+    List<ZMImage> images = new LinkedList<>();
+    String path = getImagePath(event);
+    return images;
+  }
+
+  public List<ZMImage> readImages(String eventId)
+  {
+    return readImages(getEvent(eventId));
+  }
+
+  /**
+   * (baseurl)/zm/events/(monitorId)/(yy)/(MM)/(dd)/(HH)/(mm)/(ss)/(FrameId)-(analyse|capture).jpg<br>
+   * yy - year: 16 (2016)<br>
+   * MM - month: 01 (January)<br>
+   * dd - day of month (01, 02, ...)<br>
+   * HH - hour of day (00, 01, ..., 23) (start time of event)<br>
+   * mm - minutes (00, 01, ..., 59) (start time of event)<br>
+   * ss - seconds (00, 01, ..., 59) (start time of event)<br>
+   * FrameId - 01002 (5 digits), if bulk, then all next frameIds (sequencer) are used until next frame.<br>
+   * analyse|capture - analyse only for alarms?
+   * @param event
+   * @return
+   */
+  String getImagePath(ZMEvent event)
+  {
+    StringBuilder sb = new StringBuilder();
+    sb.append(event.getMonitorId()).append("/");
+    // 2016-03-29 18:20:00 -> 16/03/29/18/20/00
+    char[] startTime = event.getValue("StartTime").toCharArray(); // yyyy-MM-dd HH:mm:ss
+    sb.append(startTime[2]).append(startTime[3]).append('/')// yy
+        .append(startTime[5]).append(startTime[6]).append('/') // MM
+        .append(startTime[8]).append(startTime[9]).append('/') // dd
+        .append(startTime[11]).append(startTime[12]).append('/') // HH
+        .append(startTime[14]).append(startTime[15]).append('/') // mm
+        .append(startTime[17]).append(startTime[18]).append('/'); // ss
+    return sb.toString();
   }
 }
