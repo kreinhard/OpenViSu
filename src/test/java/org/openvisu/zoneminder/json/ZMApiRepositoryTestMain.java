@@ -1,5 +1,6 @@
 package org.openvisu.zoneminder.json;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
@@ -17,6 +18,10 @@ public class ZMApiRepositoryTestMain
 {
   private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(ZMApiRepositoryTestMain.class);
 
+  private ZMClientSession session;
+
+  private ZMApiRepository repo;
+
   /**
    * Main method.
    * @param args
@@ -24,13 +29,32 @@ public class ZMApiRepositoryTestMain
    */
   public static void main(String[] args) throws Exception
   {
+    ZMApiRepositoryTestMain main = new ZMApiRepositoryTestMain();
+    main.readMonitors().readConfig().readAllEvents();
+    Calendar cal = Calendar.getInstance();
+    cal.clear();
+    cal.set(2016, Calendar.MARCH, 28, 0, 0, 0);
+    Date from = cal.getTime();
+    cal.set(2016, Calendar.MARCH, 28, 23, 59, 59);
+    Date until = cal.getTime();
+    main.readEvents(from, until);
+    //main.writeEventJson("1542");
+    main.close();
+  }
+
+  public ZMApiRepositoryTestMain()
+  {
     OpenVisuConfig cfg = OpenVisuConfig.instance();
     String url = cfg.getProperty("zoneminder.url", "http://localhost/zm");
     String user = cfg.getProperty("zoneminder.viewUser", "view");
     String password = cfg.getProperty("zoneminder.viewUser.password", "test");
-    ZMClientSession session = new ZMClientSession(url);
+    session = new ZMClientSession(url);
     session.authenticate(user, password);
-    ZMApiRepository repo = new ZMApiRepository(session);
+    repo = new ZMApiRepository(session);
+  }
+
+  public ZMApiRepositoryTestMain readMonitors()
+  {
     List<ZMMonitor> monitors = repo.getMonitors();
     int numberOfMonitors = monitors != null ? monitors.size() : 0;
     log.info("Number of read monitors: " + numberOfMonitors);
@@ -42,41 +66,67 @@ public class ZMApiRepositoryTestMain
       List<ZMEvent> events = repo.getAllEvents(monitor.getId());
       log.info("" + events.size() + " events read for monitor: " + monitor + " (" + getNumberOfNewEvents(events) + " new events)");
     }
+    return this;
+  }
+
+  public ZMApiRepositoryTestMain readConfig()
+  {
     ZMConfig config = repo.getConfig("ZM_WEB_EVENTS_PER_PAGE");
     log.info("Config parameter WEB_EVENTS_PER_PAGE=" + config.getIntValue());
-    {
-      List<ZMEvent> events = repo.getAllEvents();
-      log.info("" + events.size() + " events read for all monitors (" + getNumberOfNewEvents(events) + " new events)");
-      int counter = 0;
-      for (ZMEvent event : events) {
-        if (event.getNumberOfAlarmFrames() > 0) {
-          log.info("Event with alarms: " + event);
-          repo.getEvent(event.getId());
-          // for (ZMFrame frame : event.getFrames()) {
-          // if ("Alarm".equals(frame.getValue("Type")) == true) {
-          // log.info("Frame" + frame);
-          // }
-          // }
-          if (++counter >= 5) {
-            // get only frames of the first 5 events
-            break;
-          }
+    return this;
+  }
+
+  public ZMApiRepositoryTestMain readAllEvents()
+  {
+    List<ZMEvent> events = repo.getAllEvents();
+    log.info("" + events.size() + " events read for all monitors (" + getNumberOfNewEvents(events) + " new events)");
+    int counter = 0;
+    for (ZMEvent event : events) {
+      if (event.getNumberOfAlarmFrames() > 0) {
+        log.info("Event with alarms: " + event);
+        repo.getEvent(event.getId());
+        // for (ZMFrame frame : event.getFrames()) {
+        // if ("Alarm".equals(frame.getValue("Type")) == true) {
+        // log.info("Frame" + frame);
+        // }
+        // }
+        if (++counter >= 5) {
+          // get only frames of the first 5 events
+          break;
         }
       }
-      Calendar cal = Calendar.getInstance();
-      cal.clear();
-      cal.set(2016, Calendar.MARCH, 28, 0, 0, 0);
-      Date from = cal.getTime();
-      cal.set(2016, Calendar.MARCH, 28, 23, 59, 59);
-      Date until = cal.getTime();
-      events = repo.getEvents(from, until);
-      log.info("" + events.size() + " events read for all monitors (" + getNumberOfNewEvents(events) + " new events)");
-      if (numberOfMonitors > 0) {
-        ZMMonitor monitor = monitors.get(0);
-        events = repo.getEvents(monitor.getId(), from, until);
-        log.info("" + events.size() + " events read for monitor: " + monitor + " (" + getNumberOfNewEvents(events) + " new events)");
-      }
     }
+    return this;
+  }
+
+  public ZMApiRepositoryTestMain readEvents(Date from, Date until)
+  {
+    List<ZMEvent> events = repo.getEvents(from, until);
+    log.info("" + events.size() + " events read for all monitors (" + getNumberOfNewEvents(events) + " new events)");
+    List<ZMMonitor> monitors = repo.getMonitors();
+    if (monitors.size() > 0) {
+      ZMMonitor monitor = monitors.get(0);
+      events = repo.getEvents(monitor.getId(), from, until);
+      log.info("" + events.size() + " events read for monitor: " + monitor + " (" + getNumberOfNewEvents(events) + " new events)");
+    }
+    return this;
+  }
+
+  public ZMApiRepositoryTestMain writeEventJson(String eventId)
+  {
+    String json = repo.getEventJson(eventId);
+    try {
+      FileWriter writer = new FileWriter("event-" + eventId + "-json.txt");
+      writer.write(json);
+      writer.close();
+    } catch (IOException e) {
+      log.error(e.getMessage(), e);
+    }
+    return this;
+  }
+
+  public void close()
+  {
     session.closeQuietly();
   }
 

@@ -1,8 +1,12 @@
 package org.openvisu.zoneminder;
 
+import java.util.Date;
+
 public class ZMImage
 {
   private String filename;
+
+  private Date timestamp;
 
   private ZMEvent event;
 
@@ -53,6 +57,21 @@ public class ZMImage
   public ZMImageType getType()
   {
     return type;
+  }
+
+  /**
+   * @param timestamp
+   * @return this for fluent pattern.
+   */
+  public ZMImage setTimestamp(Date timestamp)
+  {
+    this.timestamp = timestamp;
+    return this;
+  }
+
+  public Date getTimestamp()
+  {
+    return timestamp;
   }
 
   public String toString()

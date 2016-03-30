@@ -8,6 +8,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.joda.time.DateTime;
+import org.joda.time.Duration;
 import org.openvisu.zoneminder.ZMConfig;
 import org.openvisu.zoneminder.ZMEvent;
 import org.openvisu.zoneminder.ZMFrame;
@@ -220,12 +222,7 @@ public class ZMApiRepository
 
   public ZMEvent getEvent(String eventId)
   {
-    String json;
-    if (session.isTestMode() == true) {
-      json = session.readFile("zoneminder-event-with-frames-json.txt");
-    } else {
-      json = session.httpGet("api/events/" + eventId + ".json");
-    }
+    String json = getEventJson(eventId);
     Json2MapReader jsonReader = new Json2MapReader(json);
     @SuppressWarnings("unchecked")
     Map<String, String> eventObject = (Map<String, String>) jsonReader.getMap("event", "Event");
@@ -247,6 +244,17 @@ public class ZMApiRepository
     log.info("Number of read frames: " + frames.size() + " with " + alarmCounter + " alarms.");
     event.setFrames(frames);
     return event;
+  }
+
+  public String getEventJson(String eventId)
+  {
+    String json;
+    if (session.isTestMode() == true) {
+      json = session.readFile("zoneminder-event-with-frames-json.txt");
+    } else {
+      json = session.httpGet("api/events/" + eventId + ".json");
+    }
+    return json;
   }
 
   public List<ZMImage> readImages(String eventId)
@@ -272,26 +280,48 @@ public class ZMApiRepository
     buildImagePath(event, sb);
     String baseFilename = sb.toString();
     int imageCounter = 1;
+    ZMFrame lastFrame = null;
     for (ZMFrame frame : event.getFrames()) {
       int frameId = frame.getFrameId();
-      if (frame.getType() == ZMFrameType.BULK) {
-        log.info("Read bulk with frameId: " + frameId);
-        // Generate all frames of this bulk:
+      boolean lastFrameWasBulk = (lastFrame != null && lastFrame.getType() == ZMFrameType.BULK);
+      if (frame.getType() == ZMFrameType.BULK || lastFrameWasBulk) {
+        ZMFrame currentFrame = lastFrameWasBulk ? lastFrame : frame;
+        // Insert missed images from last read bulk or current bulk frame:
         while (imageCounter < frameId) {
-          ZMImage image = new ZMImage(baseFilename, event, frame, ZMImageType.CAPTURE, ZMFrame.getFormattedFrameId(imageCounter++));
+          //log.info("Add bulk-image: " + imageCounter);
+          ZMImage image = new ZMImage(baseFilename, event, currentFrame, ZMImageType.CAPTURE, ZMFrame.getFormattedFrameId(imageCounter++));
           images.add(image);
-          log.info("Add bulk-image: " + imageCounter);
         }
-      } else {
-        imageCounter = frameId;
-        ZMImage image = new ZMImage(baseFilename, event, frame, ZMImageType.CAPTURE, ZMFrame.getFormattedFrameId(imageCounter++));
-        images.add(image);
-        log.info("Add image: " + imageCounter);
       }
+      imageCounter = frameId;
+      //log.info("Add image: " + imageCounter);
+      Date timestamp = frame.getTimestampValue("TimeStamp");
+      ZMImage image = new ZMImage(baseFilename, event, frame, ZMImageType.CAPTURE, ZMFrame.getFormattedFrameId(imageCounter++))
+          .setTimestamp(timestamp);
+      images.add(image);
+      lastFrame = frame;
       // if (frame.getType() == ZMFrameType.ALARM) {
       // ZMImage image = new ZMImage(baseFilename, event, frame, ZMImageType.ANALYSE, ZMFrame.getFormattedFrameId(imageCounter));
       // images.add(image);
       // }
+    }
+    // Fill timestamps of bulk frame images:
+    DateTime startTimestamp = event.getJodaTimestampValue("StartTime");
+    DateTime endTimestamp = event.getJodaTimestampValue("EndTime");
+    long duration = new Duration(startTimestamp, endTimestamp).getMillis();
+    int numberOfImages = images.size();
+    long rate = duration / numberOfImages;
+    log.info("duration=" + duration + ", numberOfImages=" + numberOfImages + ", rate=" + rate);
+    long delta = 0;
+    for (ZMImage image : images) {
+      if (image.getTimestamp() == null) {
+        image.setTimestamp(startTimestamp.plus(delta).toDate());
+      } else {
+        // Calibrate:
+        delta = 0;
+        startTimestamp = new DateTime(image.getTimestamp());
+      }
+      delta += rate;
     }
     return images;
   }

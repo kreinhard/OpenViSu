@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
+import org.joda.time.DateTime;
 import org.junit.Test;
 import org.openvisu.zoneminder.ZMConfig;
 import org.openvisu.zoneminder.ZMEvent;
@@ -95,8 +96,32 @@ public class ZMApiRepositoryTest
     ZMEvent event = repo.getEvent("Event-50");
     List<ZMImage> images = repo.readImages(event);
     int counter = 1;
+    int rate = 600000 / 1364; // delta in ms between two images.
+    int delta = 0;
+    DateTime start = event.getJodaTimestampValue("StartTime");
     for (ZMImage image : images) {
       assertTrue(image.getFilename() + "-" + counter, image.getFilename().contains(String.valueOf(counter++)));
+      // System.out.println("Image " + image.getFilename() + ": timestamp=" + new DateTime(image.getTimestamp()));
+      DateTime computedEventStartTime = new DateTime(image.getTimestamp()).minus(delta);
+      long diff1 = computedEventStartTime.getMillis() - start.getMillis();
+      long diff2 = start.getMillis() - computedEventStartTime.getMillis();
+      assertTrue("ZMimage "
+          + image.getFilename()
+          + " timestamp "
+          + image.getTimestamp()
+          + " should be near to "
+          + start.plus(delta)
+          + ", diff[ms]="
+          + diff1, diff1 < 4000); // Epsilon < 4000ms
+      assertTrue("ZMimage "
+          + image.getFilename()
+          + " timestamp "
+          + image.getTimestamp()
+          + " should be near to "
+          + start.plus(delta)
+          + ", diff[ms]="
+          + diff2, diff2 < 4000); // Epsilon < 4000ms
+      delta += rate;
     }
     assertEquals(1364, images.size());
   }
