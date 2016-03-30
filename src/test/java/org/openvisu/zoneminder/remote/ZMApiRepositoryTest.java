@@ -1,4 +1,4 @@
-package org.openvisu.zoneminder.json;
+package org.openvisu.zoneminder.remote;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -16,6 +16,8 @@ import org.openvisu.zoneminder.ZMFrameType;
 import org.openvisu.zoneminder.ZMImage;
 import org.openvisu.zoneminder.ZMMonitor;
 import org.openvisu.zoneminder.ZMMonitorFunction;
+import org.openvisu.zoneminder.remote.ZMApiRepository;
+import org.openvisu.zoneminder.remote.ZMClientSession;
 
 public class ZMApiRepositoryTest
 {

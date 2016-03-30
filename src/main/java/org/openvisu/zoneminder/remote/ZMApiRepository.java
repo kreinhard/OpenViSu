@@ -1,4 +1,4 @@
-package org.openvisu.zoneminder.json;
+package org.openvisu.zoneminder.remote;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -15,7 +15,6 @@ import org.openvisu.zoneminder.ZMEvent;
 import org.openvisu.zoneminder.ZMFrame;
 import org.openvisu.zoneminder.ZMFrameType;
 import org.openvisu.zoneminder.ZMImage;
-import org.openvisu.zoneminder.ZMImageType;
 import org.openvisu.zoneminder.ZMMonitor;
 import org.openvisu.zoneminder.ZMZone;
 import org.springframework.util.CollectionUtils;
@@ -220,6 +219,11 @@ public class ZMApiRepository
     return events;
   }
 
+  /**
+   * Reads event including all frames.
+   * @param eventId
+   * @return
+   */
   public ZMEvent getEvent(String eventId)
   {
     String json = getEventJson(eventId);
@@ -230,18 +234,18 @@ public class ZMApiRepository
     event.setMonitor(getMonitor(event.getMonitorId()));
     List<Map<String, ? >> frameObjects = jsonReader.getList("event", "Frame");
     List<ZMFrame> frames = new ArrayList<>();
-    int alarmCounter = 0;
+    //int alarmCounter = 0;
     if (CollectionUtils.isEmpty(frameObjects) == false) {
       for (Map<String, ? > obj : frameObjects) {
         @SuppressWarnings("unchecked")
         ZMFrame frame = new ZMFrame((Map<String, String>) obj);
-        if (frame.getType() == ZMFrameType.ALARM) {
-          alarmCounter++;
-        }
+        // if (frame.getType() == ZMFrameType.ALARM) {
+        // alarmCounter++;
+        //  }
         frames.add(frame);
       }
     }
-    log.info("Number of read frames: " + frames.size() + " with " + alarmCounter + " alarms.");
+    //log.info("Number of read frames: " + frames.size() + " with " + alarmCounter + " alarms.");
     event.setFrames(frames);
     return event;
   }
@@ -289,21 +293,17 @@ public class ZMApiRepository
         // Insert missed images from last read bulk or current bulk frame:
         while (imageCounter < frameId) {
           //log.info("Add bulk-image: " + imageCounter);
-          ZMImage image = new ZMImage(baseFilename, event, currentFrame, ZMImageType.CAPTURE, ZMFrame.getFormattedFrameId(imageCounter++));
+          ZMImage image = new ZMImage(baseFilename, event, currentFrame, ZMFrame.getFormattedFrameId(imageCounter++));
           images.add(image);
         }
       }
       imageCounter = frameId;
       //log.info("Add image: " + imageCounter);
       Date timestamp = frame.getTimestampValue("TimeStamp");
-      ZMImage image = new ZMImage(baseFilename, event, frame, ZMImageType.CAPTURE, ZMFrame.getFormattedFrameId(imageCounter++))
+      ZMImage image = new ZMImage(baseFilename, event, frame, ZMFrame.getFormattedFrameId(imageCounter++))
           .setTimestamp(timestamp);
       images.add(image);
       lastFrame = frame;
-      // if (frame.getType() == ZMFrameType.ALARM) {
-      // ZMImage image = new ZMImage(baseFilename, event, frame, ZMImageType.ANALYSE, ZMFrame.getFormattedFrameId(imageCounter));
-      // images.add(image);
-      // }
     }
     // Fill timestamps of bulk frame images:
     DateTime startTimestamp = event.getJodaTimestampValue("StartTime");
@@ -311,7 +311,7 @@ public class ZMApiRepository
     long duration = new Duration(startTimestamp, endTimestamp).getMillis();
     int numberOfImages = images.size();
     long rate = duration / numberOfImages;
-    log.info("duration=" + duration + ", numberOfImages=" + numberOfImages + ", rate=" + rate);
+    //log.info("duration=" + duration + ", numberOfImages=" + numberOfImages + ", rate=" + rate);
     long delta = 0;
     for (ZMImage image : images) {
       if (image.getTimestamp() == null) {

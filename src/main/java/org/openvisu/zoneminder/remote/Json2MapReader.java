@@ -1,4 +1,4 @@
-package org.openvisu.zoneminder.json;
+package org.openvisu.zoneminder.remote;
 
 import java.util.List;
 import java.util.Map;

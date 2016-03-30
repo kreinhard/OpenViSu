@@ -1,15 +1,25 @@
-package org.openvisu.zoneminder.json;
+package org.openvisu.zoneminder.remote;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.openvisu.OpenVisuConfig;
 import org.openvisu.zoneminder.ZMConfig;
 import org.openvisu.zoneminder.ZMEvent;
+import org.openvisu.zoneminder.ZMFrame;
+import org.openvisu.zoneminder.ZMFrameType;
+import org.openvisu.zoneminder.ZMImage;
 import org.openvisu.zoneminder.ZMMonitor;
+import org.openvisu.zoneminder.remote.ZMApiRepository;
+import org.openvisu.zoneminder.remote.ZMClientSession;
 
 /**
  * Main class for testing ZoneMinder API and playing around.
@@ -38,7 +48,8 @@ public class ZMApiRepositoryTestMain
     cal.set(2016, Calendar.MARCH, 28, 23, 59, 59);
     Date until = cal.getTime();
     main.readEvents(from, until);
-    //main.writeEventJson("1542");
+    main.readAlarmImages("1542");
+    // main.writeEventJson("1542");
     main.close();
   }
 
@@ -122,6 +133,28 @@ public class ZMApiRepositoryTestMain
     } catch (IOException e) {
       log.error(e.getMessage(), e);
     }
+    return this;
+  }
+
+  public ZMApiRepositoryTestMain readAlarmImages(String eventId)
+  {
+    List<ZMImage> images = repo.readImages(eventId);
+    long millis = System.currentTimeMillis();
+    for (ZMImage image : images) {
+      ZMFrame frame = image.getFrame();
+      if (frame.getType() == ZMFrameType.ALARM) {
+        byte[] file = session.getEventImage(image.getAnalyseFilename());
+        ByteArrayInputStream is = new ByteArrayInputStream(file);
+        try {
+          IOUtils.copy(is, new FileOutputStream(new File(image.getFilename()).getName()));
+        } catch (FileNotFoundException e) {
+          log.error(e.getMessage(), e);
+        } catch (IOException e) {
+          log.error(e.getMessage(), e);
+        }
+      }
+    }
+    log.info("Duration for " + images.size() + " images: " + (System.currentTimeMillis() - millis) / 1000 + "s.");
     return this;
   }
 

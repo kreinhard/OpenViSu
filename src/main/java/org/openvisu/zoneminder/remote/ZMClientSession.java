@@ -1,7 +1,9 @@
-package org.openvisu.zoneminder.json;
+package org.openvisu.zoneminder.remote;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -14,6 +16,7 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.CookieStore;
@@ -41,6 +44,8 @@ public class ZMClientSession
 
   private String baseUrl;
 
+  private String baseImageUrl;
+
   private CloseableHttpClient httpclient;
 
   private SSLConnectionSocketFactory sslsf;
@@ -54,6 +59,7 @@ public class ZMClientSession
   public ZMClientSession(String url)
   {
     this.baseUrl = url;
+    this.baseImageUrl = concatePath(baseUrl, "events");
     if (url.startsWith("file://") == true) {
       this.baseUrl = url.replace("file:/", System.getProperty("user.dir"));
       log.info("Initialization with file data (should only be used for test cases!");
@@ -182,6 +188,38 @@ public class ZMClientSession
     return internalHttpPost(url, params);
   }
 
+  public byte[] getEventImage(String path)
+  {
+    String url = concatePath(this.baseImageUrl, path);
+    if (authorized == false) {
+      throw new RuntimeException("Ignoring call, because user not authorized: " + url);
+    }
+    HttpGet httpGet = new HttpGet(url);
+    CloseableHttpResponse response = null;
+    try {
+      response = httpclient.execute(httpGet);
+      HttpEntity entity = response.getEntity();
+      InputStream inputStream = entity.getContent();
+      ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+      IOUtils.copy(inputStream, outputStream);
+      outputStream.close();
+      byte[] file = outputStream.toByteArray();
+      return file;
+    } catch (IOException ex) {
+      log.warn(ex.getMessage(), ex);
+      throw new RuntimeException("Error while requesting http get '" + url + "'.", ex);
+    } finally {
+      if (response != null) {
+        try {
+          response.close();
+        } catch (IOException ex) {
+          log.warn(ex.getMessage(), ex);
+          throw new RuntimeException("Error while requesting http get '" + url + "'.", ex);
+        }
+      }
+    }
+  }
+
   public boolean isTestMode()
   {
     return testMode;
@@ -228,7 +266,6 @@ public class ZMClientSession
         }
       }
     }
-
   }
 
   private String concatePath(String url, String path)
