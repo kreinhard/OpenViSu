@@ -1,8 +1,15 @@
 # OpenViSu
 Open Video Surveillance, it started with an *Easter hacking session*...
 
-##Early ideas
-2016-03-31
+##2016-03-31 Features already done
+1. ZoneMinder rest api works (getting events, alarms, frames, monitors, pictures etc.) including SSL support.
+2. Local caching of images for saving network bandwidth (configurable).
+
+##2016-03-31 What's next?
+1. Do the AngularJS stuff (web pages) with Spring security.
+2. Showing alarm frames, live monitors and walk around the archive images.
+3. see thoughts below.
+
 Thoughts by Kai Reinhard after an Easter hacking session. How to proceed?
 
 ###Do the web stuff
