@@ -2,10 +2,10 @@ package org.openvisu.zoneminder.remote;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.joda.time.DateTime;
 import org.openvisu.OpenVisuConfig;
 import org.openvisu.zoneminder.ZMConfig;
 import org.openvisu.zoneminder.ZMEvent;
@@ -33,17 +33,42 @@ public class ZMApiRepositoryTestMain
   public static void main(String[] args) throws Exception
   {
     ZMApiRepositoryTestMain main = new ZMApiRepositoryTestMain();
-    main.readMonitors().readConfig().readAllEvents();
-    Calendar cal = Calendar.getInstance();
-    cal.clear();
-    cal.set(2016, Calendar.MARCH, 28, 0, 0, 0);
-    Date from = cal.getTime();
-    cal.set(2016, Calendar.MARCH, 28, 23, 59, 59);
-    Date until = cal.getTime();
-    main.readEvents(from, until);
-    main.readAlarmImages("1542");
+    main.test2();
     // main.writeEventJson("1542");
     main.close();
+  }
+
+  public void test1()
+  {
+    DateTime from = new DateTime().minusDays(1).withTime(0, 0, 0, 0);
+    DateTime until = new DateTime();
+    List<ZMEvent> events = repo.getEvents(from.toDate(), until.toDate());
+    log.info("" + events.size() + " events read for all monitors (" + getNumberOfNewEvents(events) + " new events)");
+    for (ZMEvent event : events) {
+      List<ZMImage> images = repo.readImages(event.getId());
+      int alarmImages = 0;
+      for (ZMImage image : images) {
+        ZMFrame frame = image.getFrame();
+        if (frame.getType() == ZMFrameType.ALARM) {
+          session.getEventImage(image.getAnalyseFilename());
+          ++alarmImages;
+        }
+      }
+      if (alarmImages != event.getNumberOfAlarmFrames()) {
+        log.error("*** Read alarm imges (" + alarmImages + ") != " + event.getNumberOfAlarmFrames() + "!!!!");
+      } else if (alarmImages > 0){
+        log.info("Read " + alarmImages + " alarm images of event " + event.getId() + " of monitor " + event.getMonitor().getId());
+      }
+    }
+  }
+
+  public void test2()
+  {
+    readMonitors().readConfig().readAllEvents();
+    DateTime from = new DateTime(2016, 3, 28, 0, 0, 0, 0);
+    DateTime until = new DateTime(2016, 3, 28, 23, 59, 59, 999);
+    readEvents(from.toDate(), until.toDate());
+    readAlarmImages("1542");
   }
 
   public ZMApiRepositoryTestMain()

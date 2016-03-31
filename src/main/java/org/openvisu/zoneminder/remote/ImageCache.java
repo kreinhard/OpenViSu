@@ -95,6 +95,7 @@ public class ImageCache
     }
     try {
       byte[] ba = FileUtils.readFileToByteArray(file);
+      //file.setLastModified(System.currentTimeMillis());
       return ba;
     } catch (IOException e) {
       log.error("Can't read cached file '" + file.getAbsolutePath() + "'. Try to delete it manually. " + e.getMessage(), e);
@@ -146,7 +147,7 @@ public class ImageCache
         log.error("Can't get time of creation of file '" + file.getAbsolutePath() + "'. Can't check and delete it.");
         return false;
       }
-      FileTime fileTime = attr.creationTime();
+      FileTime fileTime = attr.lastAccessTime();
       if (currentCleanUpStartTime - fileTime.toMillis() > expireTime) {
         return deleteFile(file);
       }
