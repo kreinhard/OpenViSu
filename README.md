@@ -1,9 +1,39 @@
 # OpenViSu
-Open Video Surveillance
+Open Video Surveillance, it started with an *Easter hacking session*...
 
-This application was generated using JHipster, you can find documentation and help at [https://jhipster.github.io](https://jhipster.github.io).
+##Early ideas
+2016-03-31
+Thoughts by Kai Reinhard after an Easter hacking session. How to proceed?
+
+###Do the web stuff
+Should work responsive also on mobile devices (using Bootstrap with AngularJS)
+
+###Play video
+Videogular (including livestream)
+
+###Convert jpg to stream
+http://www.oracle.com/technetwork/java/javase/documentation/jpegimagestomovie-176885.html
+http://stackoverflow.com/questions/24544361/how-to-create-a-mp4-video-from-images-in-java-by-using-jcodec-library
+http://jcodec.org
+
+###Support of Netavis
+Waiting for the license key :-(
+
+###ZoneMinder, Native access
+Rest-API works better than expected. Remote servers should work through caching algorithms...
+Native access to image directory and MySQL database instead of Rest-API not really needed?
+
+###Integration of OpenCV
+That would rock!
+
+###Future?
+Testing of performance of ZoneMinder (php), may-be implement another recording algorithm for saving cpu.
+
+
 
 ## Development
+
+This application was generated using JHipster, you can find documentation and help at [https://jhipster.github.io](https://jhipster.github.io).
 
 Before you can build this project, you must install and configure the following dependencies on your machine:
 
