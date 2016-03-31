@@ -7,7 +7,21 @@ import java.io.InputStream;
 import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 
+/**
+ * Used parameters with their default values:
+ * <ul>
+ * <li>zoneminder.imagecache.dir=./imagecache</li>
+ * <li>zoneminder.imagecache.expireTimeInHours=24</li>
+ * <li>zoneminder.url=http://localhost/zm</li>
+ * <li>zoneminder.viewUser=view</li>
+ * <li>zoneminder.viewUser.password=test</li>
+ * </ul>
+ * Please configure your settings in ~/.openvisu/config.props
+ * @author kai
+ *
+ */
 public class OpenVisuConfig
 {
   private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(OpenVisuConfig.class);
@@ -21,18 +35,54 @@ public class OpenVisuConfig
 
   private Properties props;
 
+  private File propFile;
+
+  private OpenVisuConfig()
+  {
+  }
+
   /**
    * @param key
    * @param defaultValue default value to return if property not found.
-   * @return propert
+   * @return property
    */
   public String getProperty(String key, String defaultValue)
+  {
+    String val = getProperty(key);
+    return val != null ? val : defaultValue;
+  }
+
+  /**
+   * @param key
+   * @param defaultValue default value to return if property not found.
+   * @return property as long value.
+   */
+  public long getProperty(String key, long defaultValue)
+  {
+    String val = getProperty(key);
+    if (StringUtils.isEmpty(val) == true) {
+      return defaultValue;
+    }
+    try {
+      return Long.valueOf(val);
+    } catch (NumberFormatException ex) {
+      log.warn("Couldn't convert config value '"
+          + key
+          + "' to long (default value "
+          + defaultValue
+          + " is used instead) from config file: "
+          + propFile.getAbsolutePath());
+      return defaultValue;
+    }
+  }
+
+  private String getProperty(String key)
   {
     if (props == null) {
       read();
     }
     String val = props.getProperty(key);
-    return val != null ? val : defaultValue;
+    return val;
   }
 
   /**
@@ -44,16 +94,22 @@ public class OpenVisuConfig
     this.props = null;
     return this;
   }
+  
+  public File getConfigFile()
+  {
+    return propFile;
+  }
 
   private void read()
   {
     String userHomeDir = System.getProperty("user.home");
-    File propFile = new File(new File(userHomeDir, ".openvisu"), "config.props");
+    propFile = new File(new File(userHomeDir, ".openvisu"), "config.props");
     if (propFile.exists() == false) {
       log.info("Property file '" + propFile.getAbsolutePath() + "' doesn't exist. Assuming default values.");
       props = new Properties();
       return;
     }
+    log.info("Read configuration from property file '" + propFile.getAbsolutePath() + "'.");
     Properties newProps = new Properties();
     try {
       InputStream is = new FileInputStream(propFile);
