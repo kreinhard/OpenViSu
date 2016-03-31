@@ -1,4 +1,4 @@
-# OpenViSu
+# OpenViSu Version 0.0.1
 Open Video Surveillance, it started with an *Easter hacking session*...
 
 ##2016-03-31 Features already done
@@ -34,7 +34,7 @@ Native access to image directory and MySQL database instead of Rest-API not real
 That would rock!
 
 ###Future?
-Testing of performance of ZoneMinder (php), may-be implement another recording algorithm for saving cpu.
+Testing the performance of ZoneMinder (php), may-be implement another recording algorithm for saving cpu.
 
 
 
