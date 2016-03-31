@@ -5,11 +5,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
-import java.util.Collection;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.DirectoryFileFilter;
-import org.apache.commons.io.filefilter.EmptyFileFilter;
 import org.openvisu.OpenVisuConfig;
 
 /**
@@ -45,6 +42,12 @@ public class ImageCache
   private long expireTime;
 
   private long lastCleanup = 0;
+
+  private long currentCleanUpStartTime = -1;
+
+  private int numberOfDeletedFiles = 0;
+
+  private int numberOfDeletedDirs = 0;
 
   private ImageCache()
   {
@@ -105,31 +108,84 @@ public class ImageCache
       // Nothing to do.
       return;
     }
-    lastCleanup = System.currentTimeMillis();
-    log.info("Cleaning up image cache in directory: " + cacheDir.getAbsolutePath());
-    Collection<File> files = FileUtils.listFiles(cacheDir, null, true); // Get all files recursive of image cache dir.
-    long now = System.currentTimeMillis();
-    for (File file : files) {
+    synchronized (this) {
+      if (currentCleanUpStartTime > 0) {
+        // Another jobs is already running.
+        log.warn("Another clean-up jobs seems to be running. Do nothing for now.");
+        return;
+      }
+      currentCleanUpStartTime = System.currentTimeMillis();
+    }
+    try {
+      log.info("Cleaning up image cache in directory: " + cacheDir.getAbsolutePath());
+      lastCleanup = currentCleanUpStartTime;
+      numberOfDeletedFiles = 0;
+      numberOfDeletedDirs = 0;
+
+      File[] files = cacheDir.listFiles();
+      if (files == null || files.length == 0) {
+        // image cache dir seems to be empty. Do nothing.
+        return;
+      }
+      for (File file : files) {
+        deleteEmptySubdirectoriesAndExpiredFiles(file);
+      }
+    } finally {
+      log.info("Number of deleted files: " + numberOfDeletedFiles + ", number of deleted empty directories: " + numberOfDeletedDirs);
+      currentCleanUpStartTime = -1;
+    }
+  }
+
+  private boolean deleteEmptySubdirectoriesAndExpiredFiles(File file)
+  {
+    if (file.isFile() == true) { // Not a directory.
       BasicFileAttributes attr;
       try {
         attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
       } catch (IOException e) {
         log.error("Can't get time of creation of file '" + file.getAbsolutePath() + "'. Can't check and delete it.");
-        continue;
+        return false;
       }
       FileTime fileTime = attr.creationTime();
-      if (now - fileTime.toMillis() > expireTime) {
-        if (file.delete() == false) {
-          log.error("Cant't delete file '" + file.getAbsolutePath() + "'.");
-        }
+      if (currentCleanUpStartTime - fileTime.toMillis() > expireTime) {
+        return deleteFile(file);
+      }
+      return false; // File not expired.
+    }
+    // file is a directory.
+    File[] files = file.listFiles();
+    if (files == null || files.length == 0) {
+      return deleteFile(file); // Directory has now sub entries, so delete it.
+    }
+    boolean empty = true;
+    for (File child : files) {
+      if (deleteEmptySubdirectoriesAndExpiredFiles(child) == false) {
+        // Has at least one sub entry.
+        empty = false;
       }
     }
-    // Remove empty directories:
-    // This code may-be has to be executed several time for deleting all empty sub-directories. Therefore several clean-up runs are needed
-    // before all empty directories are removed.
-    Collection<File> emptyDirs = FileUtils.listFilesAndDirs(cacheDir, DirectoryFileFilter.INSTANCE, EmptyFileFilter.EMPTY);
-    for (File emptyDir : emptyDirs) {
-      emptyDir.delete(); // Try to delete this dir (may-be, it's not empty anymore, then it will not be deleted).
+    if (empty == true) {
+      return deleteFile(file);
     }
+    return false;
+  }
+
+  private boolean deleteFile(File file)
+  {
+    boolean isDirectory = file.isDirectory();
+    if (file.delete() == false) {
+      if (isDirectory == true) {
+        log.error("Cant't delete directory '" + file.getAbsolutePath() + "'.");
+      } else {
+        log.error("Cant't delete file '" + file.getAbsolutePath() + "'.");
+      }
+      return false;
+    }
+    if (isDirectory == true) {
+      ++numberOfDeletedDirs;
+    } else {
+      ++numberOfDeletedFiles;
+    }
+    return true;
   }
 }
