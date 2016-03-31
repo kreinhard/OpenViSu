@@ -194,6 +194,10 @@ public class ZMClientSession
     if (authorized == false) {
       throw new RuntimeException("Ignoring call, because user not authorized: " + url);
     }
+    byte[] file = ImageCache.instance().getCachedImage(path);
+    if (file != null) {
+      return file;
+    }
     HttpGet httpGet = new HttpGet(url);
     CloseableHttpResponse response = null;
     try {
@@ -203,7 +207,8 @@ public class ZMClientSession
       ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
       IOUtils.copy(inputStream, outputStream);
       outputStream.close();
-      byte[] file = outputStream.toByteArray();
+      file = outputStream.toByteArray();
+      ImageCache.instance().writeImage(path, file);
       return file;
     } catch (IOException ex) {
       log.warn(ex.getMessage(), ex);

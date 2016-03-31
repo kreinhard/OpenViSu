@@ -69,6 +69,20 @@ public class ImageCache
     }
   }
 
+  /**
+   * @param path
+   * @param ba File content
+   */
+  public void writeImage(String path, byte[] ba)
+  {
+    File file = new File(cacheDir, path);
+    try {
+      FileUtils.writeByteArrayToFile(file, ba);
+    } catch (IOException e) {
+      log.error("Can't write file '" + file.getAbsolutePath() + "' to cache! " + e.getMessage(), e);
+    }
+  }
+
   public byte[] getCachedImage(String path)
   {
     cleanUp();
@@ -80,7 +94,7 @@ public class ImageCache
       byte[] ba = FileUtils.readFileToByteArray(file);
       return ba;
     } catch (IOException e) {
-      log.error(e.getMessage(), e);
+      log.error("Can't read cached file '" + file.getAbsolutePath() + "'. Try to delete it manually. " + e.getMessage(), e);
       return null;
     }
   }
@@ -91,6 +105,7 @@ public class ImageCache
       // Nothing to do.
       return;
     }
+    lastCleanup = System.currentTimeMillis();
     log.info("Cleaning up image cache in directory: " + cacheDir.getAbsolutePath());
     Collection<File> files = FileUtils.listFiles(cacheDir, null, true); // Get all files recursive of image cache dir.
     long now = System.currentTimeMillis();
