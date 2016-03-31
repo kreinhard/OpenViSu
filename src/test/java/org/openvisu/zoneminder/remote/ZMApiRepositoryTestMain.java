@@ -1,10 +1,13 @@
 package org.openvisu.zoneminder.remote;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.joda.time.DateTime;
 import org.openvisu.OpenVisuConfig;
 import org.openvisu.zoneminder.ZMConfig;
@@ -33,7 +36,7 @@ public class ZMApiRepositoryTestMain
   public static void main(String[] args) throws Exception
   {
     ZMApiRepositoryTestMain main = new ZMApiRepositoryTestMain();
-    main.test2();
+    main.test1();
     // main.writeEventJson("1542");
     main.close();
   }
@@ -44,19 +47,27 @@ public class ZMApiRepositoryTestMain
     DateTime until = new DateTime();
     List<ZMEvent> events = repo.getEvents(from.toDate(), until.toDate());
     log.info("" + events.size() + " events read for all monitors (" + getNumberOfNewEvents(events) + " new events)");
+    SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd_HH-mm");
     for (ZMEvent event : events) {
       List<ZMImage> images = repo.readImages(event.getId());
+      Date eventStartTime = event.getTimestampValue("StartTime");
+      String path = "imagecache/" + event.getMonitorId() + "_" + fmt.format(eventStartTime) + "_event-" + event.getId() + "-";
       int alarmImages = 0;
       for (ZMImage image : images) {
         ZMFrame frame = image.getFrame();
         if (frame.getType() == ZMFrameType.ALARM) {
-          session.getEventImage(image.getAnalyseFilename());
+          byte[] ba = session.getEventImage(image.getAnalyseFilenameWithPath());
+          try {
+            FileUtils.writeByteArrayToFile(new File(path + image.getAnalyseFilename()), ba);
+          } catch (IOException e) {
+            log.error(e.getMessage(), e);
+          }
           ++alarmImages;
         }
       }
       if (alarmImages != event.getNumberOfAlarmFrames()) {
         log.error("*** Read alarm imges (" + alarmImages + ") != " + event.getNumberOfAlarmFrames() + "!!!!");
-      } else if (alarmImages > 0){
+      } else if (alarmImages > 0) {
         log.info("Read " + alarmImages + " alarm images of event " + event.getId() + " of monitor " + event.getMonitor().getId());
       }
     }
@@ -160,7 +171,7 @@ public class ZMApiRepositoryTestMain
     for (ZMImage image : images) {
       ZMFrame frame = image.getFrame();
       if (frame.getType() == ZMFrameType.ALARM) {
-        session.getEventImage(image.getAnalyseFilename());
+        session.getEventImage(image.getAnalyseFilenameWithPath());
       }
     }
     return this;

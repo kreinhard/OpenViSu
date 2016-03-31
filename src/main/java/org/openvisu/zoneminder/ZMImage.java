@@ -8,6 +8,8 @@ public class ZMImage
 
   private String analyseFilename;
 
+  private String path;
+
   private Date timestamp;
 
   private ZMEvent event;
@@ -32,8 +34,9 @@ public class ZMImage
    */
   public ZMImage(String path, ZMEvent event, ZMFrame frame, String formattedFrameId)
   {
-    this.filename = path + formattedFrameId + "-capture.jpg";
-    this.analyseFilename = path + formattedFrameId + "-analyse.jpg";
+    this.path = path;
+    this.filename = formattedFrameId + "-capture.jpg";
+    this.analyseFilename = formattedFrameId + "-analyse.jpg";
     this.event = event;
     this.frame = frame;
   }
@@ -42,10 +45,20 @@ public class ZMImage
   {
     return filename;
   }
-  
+
+  public String getFilenameWithPath()
+  {
+    return path + filename;
+  }
+
   public String getAnalyseFilename()
   {
     return analyseFilename;
+  }
+
+  public String getAnalyseFilenameWithPath()
+  {
+    return path + analyseFilename;
   }
 
   public ZMEvent getEvent()
