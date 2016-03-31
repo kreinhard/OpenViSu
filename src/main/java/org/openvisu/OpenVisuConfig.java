@@ -12,6 +12,7 @@ import org.apache.commons.lang.StringUtils;
 /**
  * Used parameters with their default values:
  * <ul>
+ * <li>environment.video.ffmpeg.path=/opt/local/bin/ffmpeg</li>
  * <li>zoneminder.imagecache.dir=./imagecache</li>
  * <li>zoneminder.imagecache.expireTimeInHours=24</li>
  * <li>zoneminder.url=http://localhost/zm</li>
