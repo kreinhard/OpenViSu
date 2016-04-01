@@ -76,6 +76,20 @@ public class OpenVisuConfig
       return defaultValue;
     }
   }
+  
+  /**
+   * 
+   * @param key
+   * @param value
+   * @return for fluent pattern.
+   */
+  public OpenVisuConfig setProperty(String key, String value) {
+    if (props == null) {
+      read();
+    }
+    props.setProperty(key, value);
+    return this;
+  }
 
   private String getProperty(String key)
   {
@@ -85,7 +99,7 @@ public class OpenVisuConfig
     String val = props.getProperty(key);
     return val;
   }
-
+  
   /**
    * 
    * @return this for fluent pattern.
