@@ -3,6 +3,7 @@ package org.openvisu.video;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+import org.openvisu.OpenVisuConfig;
 
 public class ExecuteUtilsTest
 {
@@ -19,5 +20,12 @@ public class ExecuteUtilsTest
 
     assertNotNull(ExecuteUtils.instance().getCommandPath("hosts", "/etc/"));
     assertTrue(ExecuteUtils.instance().getCommandPath("hosts", "/etc/").endsWith("/hosts"));
+
+    OpenVisuConfig.instance().setProperty("environment.path.networks", "/etc");
+    assertNotNull(ExecuteUtils.instance().getCommandPath("networks", "environment.path.networks", "/"));
+    assertTrue(ExecuteUtils.instance().getCommandPath("networks", "environment.path.networks", "/").endsWith("/networks"));
+
+    assertNotNull(ExecuteUtils.instance().getCommandPath("group", "environment.path.group", "/etc"));
+    assertTrue(ExecuteUtils.instance().getCommandPath("group", "environment.path.group", "/etc").endsWith("/group"));
 }
 }

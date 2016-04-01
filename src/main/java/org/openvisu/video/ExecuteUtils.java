@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.openvisu.OpenVisuConfig;
 
 public class ExecuteUtils
 {
@@ -19,6 +20,15 @@ public class ExecuteUtils
   public static ExecuteUtils instance()
   {
     return instance;
+  }
+
+  public String getCommandPath(String command, String configVar, String configDefault)
+  {
+    if (commandMap.containsKey(command) == true) {
+      return commandMap.get(command);
+    }
+    String defaultPath = OpenVisuConfig.instance().getProperty(configVar, configDefault);
+    return getCommandPath(command, defaultPath);
   }
 
   public String getCommandPath(String command, String defaultPath)
