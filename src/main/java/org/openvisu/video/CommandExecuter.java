@@ -12,17 +12,17 @@ import org.openvisu.OpenVisuConfig;
  * @author kai
  *
  */
-public class ExecuteUtils
+public class CommandExecuter
 {
-  private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(ExecuteUtils.class);
+  private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(CommandExecuter.class);
 
-  private static final ExecuteUtils instance = new ExecuteUtils();
+  private static final CommandExecuter instance = new CommandExecuter();
 
   private static String[] PATH = { "/bin", "/usr/bin", "/usr/local/bin", "/opt/bin", "/opt/local/bin"};
 
   private Map<String, String> commandMap = new HashMap<String, String>();
 
-  public static ExecuteUtils instance()
+  public static CommandExecuter instance()
   {
     return instance;
   }
@@ -87,7 +87,7 @@ public class ExecuteUtils
     return null;
   }
 
-  private ExecuteUtils()
+  private CommandExecuter()
   {
   }
 }
