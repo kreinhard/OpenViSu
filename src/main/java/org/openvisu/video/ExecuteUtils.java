@@ -7,6 +7,11 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.openvisu.OpenVisuConfig;
 
+/**
+ * Searches for command lines in path {@link #PATH} and environment variable PATH. Caches found command for faster access.
+ * @author kai
+ *
+ */
 public class ExecuteUtils
 {
   private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(ExecuteUtils.class);
