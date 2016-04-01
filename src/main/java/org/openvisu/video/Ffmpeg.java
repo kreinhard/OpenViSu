@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.ProcessBuilder.Redirect;
 
-import org.openvisu.OpenVisuConfig;
-
 /**
  * Create and modify videos with ffmeg (calls System.exec).
  * @author kai
@@ -19,12 +17,11 @@ public class Ffmpeg
 
   public void generate()
   {
-    // ffmpeg -framerate 2 -pattern_type glob -i '1_*.jpg' out.mp4
+    // ffmpeg -y -framerate 2 -pattern_type glob -i '1_*.jpg' out.mp4
+    // -y - Overwrite existing files
     try {
-      String ffmpeg = OpenVisuConfig.instance().getProperty("environment.video.ffmpeg.path", "/opt/local/bin/ffmpeg");
-
-      String command = ffmpeg;// + " ";
-      ProcessBuilder pb = new ProcessBuilder(command, "-framerate", "2", "-pattern_type", "glob", "-i", "1_2016-03-30_20-40*.jpg",
+      String command = CommandExecuter.instance().getCommandPath("ffmpeg", "environment.video.ffmpeg.path", "/opt/local/bin/ffmpegconfigVar");
+      ProcessBuilder pb = new ProcessBuilder(command, "-y", "-framerate", "2", "-pattern_type", "glob", "-i", "1_2016-03-30_20-40*.jpg",
           "out-test.mp4");
       File workingDir = new File(System.getProperty("user.dir"), "imagecache");
       log.info("Executing command: " + pb.command() + " in dir: " + workingDir.getAbsolutePath());

@@ -2,7 +2,9 @@ package org.openvisu.zoneminder;
 
 import java.util.Date;
 
-public class ZMImage
+import org.openvisu.video.Image;
+
+public class ZMImage implements Image
 {
   private String filename;
 
@@ -41,12 +43,15 @@ public class ZMImage
     this.frame = frame;
   }
 
+  /**
+   * @return file name without path.
+   */
   public String getFilename()
   {
     return filename;
   }
 
-  public String getFilenameWithPath()
+  public String getAbsoluteFilename()
   {
     return path + filename;
   }
@@ -56,7 +61,7 @@ public class ZMImage
     return analyseFilename;
   }
 
-  public String getAnalyseFilenameWithPath()
+  public String getAbsoluteAnalyseFilename()
   {
     return path + analyseFilename;
   }

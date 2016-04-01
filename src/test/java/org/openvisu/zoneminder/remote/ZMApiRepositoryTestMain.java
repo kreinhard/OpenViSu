@@ -56,7 +56,7 @@ public class ZMApiRepositoryTestMain
       for (ZMImage image : images) {
         ZMFrame frame = image.getFrame();
         if (frame.getType() == ZMFrameType.ALARM) {
-          byte[] ba = session.getEventImage(image.getAnalyseFilenameWithPath());
+          byte[] ba = session.getEventImage(image.getAbsoluteAnalyseFilename());
           try {
             FileUtils.writeByteArrayToFile(new File(path + image.getAnalyseFilename()), ba);
           } catch (IOException e) {
@@ -171,7 +171,7 @@ public class ZMApiRepositoryTestMain
     for (ZMImage image : images) {
       ZMFrame frame = image.getFrame();
       if (frame.getType() == ZMFrameType.ALARM) {
-        session.getEventImage(image.getAnalyseFilenameWithPath());
+        session.getEventImage(image.getAbsoluteAnalyseFilename());
       }
     }
     return this;

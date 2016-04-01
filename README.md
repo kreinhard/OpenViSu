@@ -4,6 +4,7 @@ Open Video Surveillance, it started with an *Easter hacking session*...
 ##2016-03-31 Features already done
 1. ZoneMinder rest api works (getting events, alarms, frames, monitors, pictures etc.) including SSL support.
 2. Local caching of images for saving network bandwidth (configurable).
+3. Prototyp of MP4 (H.264) video creation from jpgs works.
 
 ##2016-03-31 What's next?
 1. Do the AngularJS stuff (web pages) with Spring security.
