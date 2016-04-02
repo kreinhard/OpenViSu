@@ -1,6 +1,8 @@
 package org.openvisu.video;
 
 import java.io.File;
+import java.io.IOException;
+import java.lang.ProcessBuilder.Redirect;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,6 +29,21 @@ public class CommandExecuter
     return instance;
   }
 
+  public void execute(File executionDir, String... commandWithArgs) {
+    ProcessBuilder pb = new ProcessBuilder(commandWithArgs);
+    log.info("Executing command: " + pb.command() + " in dir: " + executionDir);
+    pb.directory(executionDir);
+    pb.redirectOutput(Redirect.INHERIT);
+    pb.redirectError(Redirect.INHERIT);
+    try {
+      Process p = pb.start();
+    } catch (IOException e) {
+      String error = "Error while executing command '" + pb.command() + " in dir: " + executionDir + ": " + e.getMessage();
+      log.error(error);
+      throw new RuntimeException(error, e);
+    }
+  }
+  
   public String getCommandPath(String command, String configVar, String configDefault)
   {
     if (commandMap.containsKey(command) == true) {

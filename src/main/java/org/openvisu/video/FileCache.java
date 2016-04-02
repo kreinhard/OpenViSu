@@ -179,7 +179,7 @@ public class FileCache
       synchronized (this) {
         if (currentCleanUpStartTime > 0) {
           // Another jobs is already running.
-          log.warn("Another clean-up jobs seems to be running. Do nothing for now.");
+          log.debug("Another clean-up jobs seems to be running. Do nothing for now.");
           return;
         }
         currentCleanUpStartTime = System.currentTimeMillis();

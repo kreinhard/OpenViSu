@@ -18,6 +18,8 @@ public class ZMImage implements Image
   private ZMEvent event;
 
   private ZMFrame frame;
+  
+  private boolean hasAnalyseFile;
 
   /**
    * (baseurl)/zm/events/(monitorId)/(yy)/(MM)/(dd)/(HH)/(mm)/(ss)/(FrameId)-(analyse|capture).jpg<br>
@@ -43,6 +45,12 @@ public class ZMImage implements Image
     this.event = event;
     this.frame = frame;
   }
+  
+  @Override
+  public boolean hasAnalyseFile()
+  {
+    return hasAnalyseFile;
+  }
 
   /**
    * @return file name without path.
@@ -54,7 +62,7 @@ public class ZMImage implements Image
 
   public String getFile(ImageType type)
   {
-    if (type == ImageType.ANALYSIS) {
+    if (hasAnalyseFile == true && type == ImageType.ANALYSIS) {
       return getAnalyseFile();
     }
     return getFile();
@@ -83,6 +91,15 @@ public class ZMImage implements Image
   public ZMFrame getFrame()
   {
     return frame;
+  }
+  
+  /**
+   * @param hasAnalyseFile
+   * @return this for chaining.
+   */
+  public ZMImage setHasAnalyse(boolean hasAnalyseFile) {
+    this.hasAnalyseFile = hasAnalyseFile;
+    return this;
   }
 
   /**

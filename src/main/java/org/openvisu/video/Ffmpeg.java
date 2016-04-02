@@ -28,26 +28,19 @@ public class Ffmpeg
     Validate.notEmpty(images, "No images given in method generate(Collection<Image>, ImageType).");
     // ffmpeg -y -framerate 2 -pattern_type glob -i '1_*.jpg' out.mp4
     // -y - Overwrite existing files
-    try {
-      String command = CommandExecuter.instance().getCommandPath("ffmpeg", CONFIG_KEY_FFMPEG, DEFAULT_FFMPEG);
-      FileCache cache = FileCache.instance();
-      String workingDir = cache.getNewWorkingDirectory("ffmpeg-");
-      int counter = 0;
-      String imageExtension = FilenameUtils.getExtension(images.iterator().next().getFile());
-      for (Image image : images) {
-        cache.copyImageToCache(image, type, new File(workingDir, "image-" + VideoUtils.getFormattedFrameId(++counter) + "." + imageExtension).getPath());
-      }
-      ProcessBuilder pb = new ProcessBuilder(command, "-y", "-framerate", "2", "-pattern_type", "glob", "-i", "image-*." + imageExtension,
-          "out-test.mp4");
-      File executionDir = cache.getWorkingDirectory(workingDir);
-      log.info("Executing command: " + pb.command() + " in dir: " + executionDir);
-      pb.directory(executionDir);
-      pb.redirectOutput(Redirect.INHERIT);
-      pb.redirectError(Redirect.INHERIT);
-      Process p = pb.start();
-    } catch (IOException e) {
-      log.error(e.getMessage(), e);
+    String command = CommandExecuter.instance().getCommandPath("ffmpeg", CONFIG_KEY_FFMPEG, DEFAULT_FFMPEG);
+    FileCache cache = FileCache.instance();
+    String workingDir = cache.getNewWorkingDirectory("ffmpeg-");
+    int counter = 0;
+    String imageExtension = FilenameUtils.getExtension(images.iterator().next().getFile());
+    for (Image image : images) {
+      cache.copyImageToCache(image, type,
+          new File(workingDir, "image-" + VideoUtils.getFormattedFrameId(++counter) + "." + imageExtension).getPath());
     }
+    String[] commandWithArgs = { command, "-y", "-framerate", "2", "-pattern_type", "glob", "-i", "image-*." + imageExtension,
+        "out-test.mp4"};
+    File executionDir = cache.getWorkingDirectory(workingDir);
+    CommandExecuter.instance().execute(executionDir, commandWithArgs);
   }
 
   public String getFramerate()

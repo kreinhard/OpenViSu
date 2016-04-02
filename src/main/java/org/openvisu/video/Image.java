@@ -2,6 +2,8 @@ package org.openvisu.video;
 
 public interface Image
 {
+  public boolean hasAnalyseFile();
+
   /**
    * @return File name with path relative to image cache dir.
    */

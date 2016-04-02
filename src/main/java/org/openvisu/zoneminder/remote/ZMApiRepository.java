@@ -303,6 +303,9 @@ public class ZMApiRepository
       Date timestamp = frame.getTimestampValue("TimeStamp");
       ZMImage image = new ZMImage(baseFilename, event, frame, VideoUtils.getFormattedFrameId(imageCounter++))
           .setTimestamp(timestamp);
+      if (frame.getType() == ZMFrameType.ALARM) {
+        image.setHasAnalyse(true);
+      }
       images.add(image);
       lastFrame = frame;
     }

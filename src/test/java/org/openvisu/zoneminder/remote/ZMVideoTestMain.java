@@ -46,10 +46,14 @@ public class ZMVideoTestMain
     }
     List< ? extends Image> images = repo.readImages(events.get(0).getId());
     for (Image image : images) {
-      session.getEventImage(image.getFile());
+      if (image.hasAnalyseFile() == true) {
+        session.getEventImage(image.getAnalyseFile());
+      }else {
+        session.getEventImage(image.getFile());
+      }
     }
     Ffmpeg ffmpeg = new Ffmpeg();
-    ffmpeg.generate(images, ImageType.NORMAL);
+    ffmpeg.generate(images, ImageType.ANALYSIS);
   }
 
   public ZMVideoTestMain()
