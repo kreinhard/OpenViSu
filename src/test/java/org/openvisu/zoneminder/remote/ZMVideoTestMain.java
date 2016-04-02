@@ -8,6 +8,9 @@ import org.openvisu.OpenVisuConfig;
 import org.openvisu.video.Ffmpeg;
 import org.openvisu.video.Image;
 import org.openvisu.video.ImageType;
+import org.openvisu.video.VideoSize;
+import org.openvisu.video.VideoType;
+import org.openvisu.video.VideoUtils;
 import org.openvisu.zoneminder.ZMEvent;
 
 public class ZMVideoTestMain
@@ -50,7 +53,7 @@ public class ZMVideoTestMain
       }
     }
     Ffmpeg ffmpeg = new Ffmpeg();
-    ffmpeg.generate(images, ImageType.ANALYSIS, "ZMVideoTestMain.mp4");
+    ffmpeg.generate(images, ImageType.ANALYSIS, "ZMVideoTestMain" + VideoUtils.getVideoFilename("5", "42", VideoType.ANALYSIS, VideoSize.NORMAL));
   }
 
   public ZMVideoTestMain()

@@ -2,7 +2,8 @@ package org.openvisu.video;
 
 public class VideoUtils
 {
-  public static String getFormattedFrameId(int frameId) {
+  public static String getFormattedFrameId(int frameId)
+  {
     if (frameId < 10) {
       return "0000" + frameId;
     } else if (frameId < 100) {
@@ -14,5 +15,10 @@ public class VideoUtils
     } else {
       return String.valueOf(frameId);
     }
+  }
+
+  public static String getVideoFilename(String cameraId, String eventId, VideoType type, VideoSize size)
+  {
+    return "c" + cameraId + "-event" + eventId + "-" + type.getName() + "-" + size.getName() + ".mp4";
   }
 }
