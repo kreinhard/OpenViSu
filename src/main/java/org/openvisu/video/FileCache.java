@@ -159,13 +159,13 @@ public class FileCache
   }
 
   /**
-   * Gets the configured working dir including the given subdir.
-   * @param subdir - created by e. g. {@link #getNewWorkingDirectory(String)}.
+   * Gets the configured working dir including the given fileOrDirectory.
+   * @param fileOrDirectory - created by e. g. {@link #getNewWorkingDirectory(String)}. Relative file or directory of cache dir work.
    * @return
    */
-  public File getWorkingDirectory(String subdir)
+  public File getWorkingDirectory(String fileOrDirectory)
   {
-    return new File(workingDir, subdir);
+    return new File(workingDir, fileOrDirectory);
   }
 
   private void cleanUp()

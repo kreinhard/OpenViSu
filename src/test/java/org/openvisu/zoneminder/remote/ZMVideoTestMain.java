@@ -9,9 +9,6 @@ import org.openvisu.video.Ffmpeg;
 import org.openvisu.video.Image;
 import org.openvisu.video.ImageType;
 import org.openvisu.zoneminder.ZMEvent;
-import org.openvisu.zoneminder.ZMFrame;
-import org.openvisu.zoneminder.ZMFrameType;
-import org.openvisu.zoneminder.ZMImage;
 
 public class ZMVideoTestMain
 {
@@ -53,7 +50,7 @@ public class ZMVideoTestMain
       }
     }
     Ffmpeg ffmpeg = new Ffmpeg();
-    ffmpeg.generate(images, ImageType.ANALYSIS);
+    ffmpeg.generate(images, ImageType.ANALYSIS, "ZMVideoTestMain.mp4");
   }
 
   public ZMVideoTestMain()

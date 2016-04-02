@@ -23,13 +23,24 @@ public class Ffmpeg
 
   private String framerate = "2";
 
-  public void generate(Collection< ? extends Image> images, ImageType type)
+  /**
+   * If the destFile does already exist then nothing will be done.
+   * @param images
+   * @param type
+   * @param destFile relativ to cache directory 'work'. This should be unique (camera id, event, frame, type of video etc.) for proper caching.
+   */
+  public void generate(Collection< ? extends Image> images, ImageType type, String destFile)
   {
     Validate.notEmpty(images, "No images given in method generate(Collection<Image>, ImageType).");
     // ffmpeg -y -framerate 2 -pattern_type glob -i '1_*.jpg' out.mp4
     // -y - Overwrite existing files
-    String command = CommandExecuter.instance().getCommandPath("ffmpeg", CONFIG_KEY_FFMPEG, DEFAULT_FFMPEG);
     FileCache cache = FileCache.instance();
+    File destination = cache.getWorkingDirectory(destFile);
+    if (destination.exists() == true) {
+      // Exists already.
+      return;
+    }
+    String command = CommandExecuter.instance().getCommandPath("ffmpeg", CONFIG_KEY_FFMPEG, DEFAULT_FFMPEG);
     String workingDir = cache.getNewWorkingDirectory("ffmpeg-");
     int counter = 0;
     String imageExtension = FilenameUtils.getExtension(images.iterator().next().getFile());
@@ -38,7 +49,7 @@ public class Ffmpeg
           new File(workingDir, "image-" + VideoUtils.getFormattedFrameId(++counter) + "." + imageExtension).getPath());
     }
     String[] commandWithArgs = { command, "-y", "-framerate", "2", "-pattern_type", "glob", "-i", "image-*." + imageExtension,
-        "out-test.mp4"};
+        destination.getAbsolutePath()};
     File executionDir = cache.getWorkingDirectory(workingDir);
     CommandExecuter.instance().execute(executionDir, commandWithArgs);
   }
