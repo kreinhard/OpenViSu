@@ -102,13 +102,13 @@ public class ZMApiRepositoryTest
     int delta = 0;
     DateTime start = event.getJodaTimestampValue("StartTime");
     for (ZMImage image : images) {
-      assertTrue(image.getAbsoluteFilename() + "-" + counter, image.getAbsoluteFilename().contains(String.valueOf(counter++)));
+      assertTrue(image.getFile() + "-" + counter, image.getFile().contains(String.valueOf(counter++)));
       // System.out.println("Image " + image.getFilename() + ": timestamp=" + new DateTime(image.getTimestamp()));
       DateTime computedEventStartTime = new DateTime(image.getTimestamp()).minus(delta);
       long diff1 = computedEventStartTime.getMillis() - start.getMillis();
       long diff2 = start.getMillis() - computedEventStartTime.getMillis();
       assertTrue("ZMimage "
-          + image.getAbsoluteFilename()
+          + image.getFile()
           + " timestamp "
           + image.getTimestamp()
           + " should be near to "
@@ -116,7 +116,7 @@ public class ZMApiRepositoryTest
           + ", diff[ms]="
           + diff1, diff1 < 4000); // Epsilon < 4000ms
       assertTrue("ZMimage "
-          + image.getAbsoluteFilename()
+          + image.getFile()
           + " timestamp "
           + image.getTimestamp()
           + " should be near to "

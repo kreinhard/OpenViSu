@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
+import org.openvisu.video.VideoUtils;
 import org.openvisu.zoneminder.ZMConfig;
 import org.openvisu.zoneminder.ZMEvent;
 import org.openvisu.zoneminder.ZMFrame;
@@ -293,14 +294,14 @@ public class ZMApiRepository
         // Insert missed images from last read bulk or current bulk frame:
         while (imageCounter < frameId) {
           //log.info("Add bulk-image: " + imageCounter);
-          ZMImage image = new ZMImage(baseFilename, event, currentFrame, ZMFrame.getFormattedFrameId(imageCounter++));
+          ZMImage image = new ZMImage(baseFilename, event, currentFrame, VideoUtils.getFormattedFrameId(imageCounter++));
           images.add(image);
         }
       }
       imageCounter = frameId;
       //log.info("Add image: " + imageCounter);
       Date timestamp = frame.getTimestampValue("TimeStamp");
-      ZMImage image = new ZMImage(baseFilename, event, frame, ZMFrame.getFormattedFrameId(imageCounter++))
+      ZMImage image = new ZMImage(baseFilename, event, frame, VideoUtils.getFormattedFrameId(imageCounter++))
           .setTimestamp(timestamp);
       images.add(image);
       lastFrame = frame;

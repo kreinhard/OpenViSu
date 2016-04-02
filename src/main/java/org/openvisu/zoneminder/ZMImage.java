@@ -52,15 +52,15 @@ public class ZMImage implements Image
     return filename;
   }
 
-  public String getAbsoluteFilename(ImageType type)
+  public String getFile(ImageType type)
   {
     if (type == ImageType.ANALYSIS) {
-      return getAbsoluteAnalyseFilename();
+      return getAnalyseFile();
     }
-    return getAbsoluteFilename();
+    return getFile();
   }
 
-  public String getAbsoluteFilename()
+  public String getFile()
   {
     return path + filename;
   }
@@ -70,7 +70,7 @@ public class ZMImage implements Image
     return analyseFilename;
   }
 
-  public String getAbsoluteAnalyseFilename()
+  public String getAnalyseFile()
   {
     return path + analyseFilename;
   }

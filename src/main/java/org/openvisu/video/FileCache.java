@@ -10,6 +10,8 @@ import java.util.concurrent.Executors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.Validate;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.openvisu.OpenVisuConfig;
 
 /**
@@ -30,9 +32,11 @@ public class FileCache
 
   private static final String DEFAULT_CACHE_DIR = "./cache";
 
-  private static final String CACHE_DIR_CONFIG_KEY = "cache.dir";
+  private static final String CONFIG_KEY_CACHE_DIR = "cache.dir";
 
-  private static final String CACHE_EXPIRE_TIME_CONFIG_KEY = "cache.expireTimeInHours";
+  private static final String CONFIG_KEY_CACHE_EXPIRE_TIME = "cache.expireTimeInHours";
+
+  private static DateTimeFormatter dateFormatter = DateTimeFormat.forPattern("yyyy-MM-dd_HH-mm-ss_SSS");
 
   public static FileCache instance()
   {
@@ -58,11 +62,11 @@ public class FileCache
 
   private FileCache()
   {
-    expireTime = OpenVisuConfig.instance().getProperty(CACHE_EXPIRE_TIME_CONFIG_KEY, DEFAULT_EXPIRE_TIME_OF_CACHED_FILES_HOURS)
+    expireTime = OpenVisuConfig.instance().getProperty(CONFIG_KEY_CACHE_EXPIRE_TIME, DEFAULT_EXPIRE_TIME_OF_CACHED_FILES_HOURS)
         * 60
         * 60
         * 1000;
-    cacheDir = new File(OpenVisuConfig.instance().getProperty(CACHE_DIR_CONFIG_KEY, DEFAULT_CACHE_DIR));
+    cacheDir = new File(OpenVisuConfig.instance().getProperty(CONFIG_KEY_CACHE_DIR, DEFAULT_CACHE_DIR));
     if (cacheDir.exists() == false) {
       log.info("Creating images cache directory: " + cacheDir.getAbsolutePath());
       if (cacheDir.mkdirs() == false) {
@@ -71,7 +75,7 @@ public class FileCache
             + "'! Please configure another directory in '"
             + OpenVisuConfig.instance().getConfigFile().getAbsolutePath()
             + "': "
-            + CACHE_DIR_CONFIG_KEY
+            + CONFIG_KEY_CACHE_DIR
             + "=...");
       }
     } else {
@@ -138,10 +142,30 @@ public class FileCache
           throw new RuntimeException(error);
         }
       }
-      FileUtils.copyFile(new File(srcImage.getAbsoluteFilename(type)), file);
+      File srcFile = new File(cacheDir, srcImage.getFile(type));
+      FileUtils.copyFile(srcFile, file);
     } catch (IOException e) {
-      log.error("Can't copy file " + srcImage.getAbsoluteFilename(type) + " to " + destFile + ". " + e.getMessage(), e);
+      log.error("Can't copy file " + srcImage.getFile(type) + " to " + destFile + ". " + e.getMessage(), e);
     }
+  }
+
+  /**
+   * @param prefix
+   * @return prefix + "yyyy-MM-dd_HH-mm-ss_SSS"
+   */
+  public String getNewWorkingDirectory(String prefix)
+  {
+    return prefix + dateFormatter.print(System.currentTimeMillis());
+  }
+
+  /**
+   * Gets the configured working dir including the given subdir.
+   * @param subdir - created by e. g. {@link #getNewWorkingDirectory(String)}.
+   * @return
+   */
+  public File getWorkingDirectory(String subdir)
+  {
+    return new File(workingDir, subdir);
   }
 
   private void cleanUp()

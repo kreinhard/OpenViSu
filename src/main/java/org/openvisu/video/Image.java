@@ -2,13 +2,19 @@ package org.openvisu.video;
 
 public interface Image
 {
-  public String getAbsoluteFilename();
+  /**
+   * @return File name with path relative to image cache dir.
+   */
+  public String getFile();
 
-  public String getAbsoluteAnalyseFilename();
+  /**
+   * @return File name of analyse image with path relative to image cache dir.
+   */
+  public String getAnalyseFile();
 
   /**
    * @param type
-   * @return {@link #getAbsoluteFilename()} for {@link ImageType#NORMAL} and {@link #getAbsoluteAnalyseFilename()} for {@link ImageType#ANALYSIS}
+   * @return {@link #getFile()} for {@link ImageType#NORMAL} and {@link #getAnalyseFile()} for {@link ImageType#ANALYSIS}
    */
-  public String getAbsoluteFilename(ImageType type);
+  public String getFile(ImageType type);
 }

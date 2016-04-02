@@ -2,24 +2,12 @@ package org.openvisu.zoneminder;
 
 import java.util.Map;
 
+import org.openvisu.video.VideoUtils;
+
 public class ZMFrame extends ZMBaseObject
 {
   private int frameId = -1;
   
-  public static String getFormattedFrameId(int frameId) {
-    if (frameId < 10) {
-      return "0000" + frameId;
-    } else if (frameId < 100) {
-      return "000" + frameId;
-    } else if (frameId < 1000) {
-      return "00" + frameId;
-    } else if (frameId < 10000) {
-      return "0" + frameId;
-    } else {
-      return String.valueOf(frameId);
-    }
-  }
-
   public ZMFrame(Map<String, String> map)
   {
     super(map);
@@ -39,7 +27,7 @@ public class ZMFrame extends ZMBaseObject
    */
   public String getFormattedFrameId()
   {
-    return getFormattedFrameId(getFrameId());
+    return VideoUtils.getFormattedFrameId(getFrameId());
   }
 
   public ZMFrameType getType()

@@ -14,7 +14,7 @@ import org.apache.commons.lang.StringUtils;
  * <ul>
  * <li>cache.dir=./cache</li>
  * <li>cache.expireTimeInHours=24</li>
- * <li>environment.video.ffmpeg.path=/opt/local/bin/ffmpeg</li>
+ * <li>command.ffmpeg.path=ffmpeg</li>
  * <li>zoneminder.url=http://localhost/zm</li>
  * <li>zoneminder.viewUser=view</li>
  * <li>zoneminder.viewUser.password=test</li>
