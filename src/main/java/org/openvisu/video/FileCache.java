@@ -5,8 +5,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.Validate;
 import org.openvisu.OpenVisuConfig;
 
 /**
@@ -115,14 +118,27 @@ public class FileCache
   }
 
   /**
+   * If subdirectory of destFile doesn't exist it will be created automatically.
    * @param srcImage
    * @param type
-   * @param destFile relative path inside cache directory.
+   * @param destFile relative path inside cache working directory.
    */
   public void copyImageToCache(Image srcImage, ImageType type, String destFile)
   {
+    cleanUp();
+    Validate.isTrue(new File(destFile).isAbsolute() == false,
+        "Don't use absolute destFile parameter in copyImageToCache(Image, ImageType, String): " + destFile);
     try {
-      FileUtils.copyFile(new File(srcImage.getAbsoluteFilename(type)), new File(cacheDir, destFile));
+      File file = new File(workingDir, destFile);
+      File dir = file.getParentFile();
+      if (dir.exists() == false) {
+        if (dir.mkdirs() == false) {
+          String error = "Couldn't create cache directory '" + dir.getAbsolutePath() + "'!";
+          log.error(error);
+          throw new RuntimeException(error);
+        }
+      }
+      FileUtils.copyFile(new File(srcImage.getAbsoluteFilename(type)), file);
     } catch (IOException e) {
       log.error("Can't copy file " + srcImage.getAbsoluteFilename(type) + " to " + destFile + ". " + e.getMessage(), e);
     }
@@ -134,32 +150,35 @@ public class FileCache
       // Nothing to do.
       return;
     }
-    synchronized (this) {
-      if (currentCleanUpStartTime > 0) {
-        // Another jobs is already running.
-        log.warn("Another clean-up jobs seems to be running. Do nothing for now.");
-        return;
+    ExecutorService executor = Executors.newSingleThreadExecutor();
+    executor.submit(() -> {
+      synchronized (this) {
+        if (currentCleanUpStartTime > 0) {
+          // Another jobs is already running.
+          log.warn("Another clean-up jobs seems to be running. Do nothing for now.");
+          return;
+        }
+        currentCleanUpStartTime = System.currentTimeMillis();
       }
-      currentCleanUpStartTime = System.currentTimeMillis();
-    }
-    try {
-      log.info("Cleaning up image cache in directory: " + cacheDir.getAbsolutePath());
-      lastCleanup = currentCleanUpStartTime;
-      numberOfDeletedFiles = 0;
-      numberOfDeletedDirs = 0;
+      try {
+        log.info("Cleaning up image cache in directory: " + cacheDir.getAbsolutePath());
+        lastCleanup = currentCleanUpStartTime;
+        numberOfDeletedFiles = 0;
+        numberOfDeletedDirs = 0;
 
-      File[] files = cacheDir.listFiles();
-      if (files == null || files.length == 0) {
-        // image cache dir seems to be empty. Do nothing.
-        return;
+        File[] files = cacheDir.listFiles();
+        if (files == null || files.length == 0) {
+          // image cache dir seems to be empty. Do nothing.
+          return;
+        }
+        for (File file : files) {
+          deleteEmptySubdirectoriesAndExpiredFiles(file);
+        }
+      } finally {
+        log.info("Number of deleted files: " + numberOfDeletedFiles + ", number of deleted empty directories: " + numberOfDeletedDirs);
+        currentCleanUpStartTime = -1;
       }
-      for (File file : files) {
-        deleteEmptySubdirectoriesAndExpiredFiles(file);
-      }
-    } finally {
-      log.info("Number of deleted files: " + numberOfDeletedFiles + ", number of deleted empty directories: " + numberOfDeletedDirs);
-      currentCleanUpStartTime = -1;
-    }
+    });
   }
 
   private boolean deleteEmptySubdirectoriesAndExpiredFiles(File file)
