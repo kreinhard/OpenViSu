@@ -33,7 +33,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
-import org.openvisu.video.FileCache;
+import org.openvisu.video.ImageCache;
 
 /**
  * TODO: Reconnect (after time out, server restart etc.).
@@ -195,7 +195,7 @@ public class ZMClientSession
     if (authorized == false) {
       throw new RuntimeException("Ignoring call, because user not authorized: " + url);
     }
-    byte[] file = FileCache.instance().getCachedImage(path);
+    byte[] file = ImageCache.instance().getCachedImage(path);
     if (file != null) {
       return file;
     }
@@ -209,7 +209,7 @@ public class ZMClientSession
       IOUtils.copy(inputStream, outputStream);
       outputStream.close();
       file = outputStream.toByteArray();
-      FileCache.instance().writeImage(path, file);
+      ImageCache.instance().writeImage(path, file);
       return file;
     } catch (IOException ex) {
       log.warn(ex.getMessage(), ex);

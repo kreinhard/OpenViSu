@@ -71,7 +71,9 @@ public abstract class AbstractFileCache
     if (directory.exists() == false) {
       log.info("Creating " + this.getClass().getName() + " cache directory: " + directory.getAbsolutePath());
       if (directory.mkdirs() == false) {
-        log.fatal("Couldn't create " + this.getClass().getName() + " cache directory '"
+        log.fatal("Couldn't create "
+            + this.getClass().getName()
+            + " cache directory '"
             + directory.getAbsolutePath()
             + "'! Please configure another directory in '"
             + OpenVisuConfig.instance().getConfigFile().getAbsolutePath()
@@ -115,7 +117,11 @@ public abstract class AbstractFileCache
           deleteEmptySubdirectoriesAndExpiredFiles(file);
         }
       } finally {
-        log.info("Number of deleted files: " + numberOfDeletedFiles + ", number of deleted empty directories: " + numberOfDeletedDirs);
+        log.info(this.getClass().getName()
+            + ": Number of deleted files: "
+            + numberOfDeletedFiles
+            + ", number of deleted empty directories: "
+            + numberOfDeletedDirs);
         currentCleanUpStartTime = -1;
       }
     });

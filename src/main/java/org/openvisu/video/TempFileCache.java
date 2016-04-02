@@ -23,9 +23,9 @@ public class TempFileCache extends AbstractFileCache
 
   private static final String DEFAULT_TMP_DIR = "tmp"; // ${base.dir} + File.separatorChar + "tmp";
 
-  private static final String CONFIG_KEY_TMP_DIR = "base.tmp.dir";
+  private static final String CONFIG_KEY_TMP_DIR = "base.cache.tmp.dir";
 
-  private static final String CONFIG_KEY_TMP_EXPIRE_TIME = "base.tmp.expireTimeInHours";
+  private static final String CONFIG_KEY_TMP_EXPIRE_TIME = "base.cache.tmp.expireTimeInHours";
 
   private static DateTimeFormatter dateFormatter = DateTimeFormat.forPattern("yyyy-MM-dd_HH-mm-ss_SSS");
 
@@ -41,7 +41,7 @@ public class TempFileCache extends AbstractFileCache
 
   /**
    * If subdirectory of destFile doesn't exist it will be created automatically.
-   * @param cachedSrcImage src image of {@link FileCache}.
+   * @param cachedSrcImage src image of {@link ImageCache}.
    * @param type
    * @param destFile relative path inside tmp directory.
    */
@@ -60,7 +60,7 @@ public class TempFileCache extends AbstractFileCache
           throw new RuntimeException(error);
         }
       }
-      File srcFile = new File(FileCache.instance().getDirectory(), cachedSrcImage.getFile(type));
+      File srcFile = new File(ImageCache.instance().getDirectory(), cachedSrcImage.getFile(type));
       FileUtils.copyFile(srcFile, file);
     } catch (IOException e) {
       log.error("Can't copy file " + cachedSrcImage.getFile(type) + " to " + destFile + ". " + e.getMessage(), e);

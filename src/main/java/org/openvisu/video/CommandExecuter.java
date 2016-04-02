@@ -6,6 +6,7 @@ import java.lang.ProcessBuilder.Redirect;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.openvisu.OpenVisuConfig;
 
@@ -29,7 +30,8 @@ public class CommandExecuter
     return instance;
   }
 
-  public void execute(File executionDir, String... commandWithArgs) {
+  public void execute(File executionDir, String... commandWithArgs)
+  {
     ProcessBuilder pb = new ProcessBuilder(commandWithArgs);
     log.info("Executing command: " + pb.command() + " in dir: " + executionDir);
     pb.directory(executionDir);
@@ -51,10 +53,14 @@ public class CommandExecuter
       throw new RuntimeException(error, e);
     }
     if (executionDir.getAbsolutePath().startsWith(TempFileCache.instance().getDirectory().getAbsolutePath()) == true) {
-      // Delete directory
+      try {
+        FileUtils.deleteDirectory(executionDir);
+      } catch (IOException e) {
+        log.error("Can't delete tmp working directory '" + executionDir.getAbsolutePath() + "': " + e.getMessage(), e);
+      }
     }
   }
-  
+
   public String getCommandPath(String command, String configVar, String configDefault)
   {
     if (commandMap.containsKey(command) == true) {

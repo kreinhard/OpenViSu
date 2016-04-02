@@ -13,10 +13,12 @@ import org.apache.commons.lang.StringUtils;
  * Used parameters with their default values:
  * <ul>
  * <li>base.dir=openvisu (in current working dir)</li>
- * <li>base.cache.dir=${base.dir}/cache</li>
- * <li>base.cache.expireTimeInHours=24</li>
- * <li>base.tmp.dir=${base.dir]/tmp</li>
- * <li>base.tmp.expireTimeInHours=1</li>
+ * <li>base.cache.images.dir=${base.dir}/image-cache</li>
+ * <li>base.cache.images.expireTimeInHours=24</li>
+ * <li>base.cache.tmp.dir=${base.dir]/tmp</li>
+ * <li>base.cache.tmp.expireTimeInHours=1</li>
+ * <li>base.cache.videos.dir=${base.dir}/video-cache</li>
+ * <li>base.cache.videos.expireTimeInHours=24</li>
  * <li>command.ffmpeg.path=ffmpeg</li>
  * <li>zoneminder.url=http://localhost/zm</li>
  * <li>zoneminder.viewUser=view</li>

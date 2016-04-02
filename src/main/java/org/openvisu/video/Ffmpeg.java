@@ -33,7 +33,8 @@ public class Ffmpeg
     // ffmpeg -y -framerate 2 -pattern_type glob -i '1_*.jpg' out.mp4
     // -y - Overwrite existing files
     TempFileCache tmpFileCache = TempFileCache.instance();
-    File destination = tmpFileCache.getFile(destFile);
+    VideoCache videoCache = VideoCache.instance();
+    File destination = videoCache.getFile(destFile);
     if (destination.exists() == true) {
       // Exists already.
       return;

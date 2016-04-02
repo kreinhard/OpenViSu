@@ -10,26 +10,26 @@ import org.apache.commons.io.FileUtils;
  * @author kai
  *
  */
-public class FileCache extends AbstractFileCache
+public class ImageCache extends AbstractFileCache
 {
-  private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(FileCache.class);
+  private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(ImageCache.class);
 
-  private static final FileCache instance = new FileCache();
+  private static final ImageCache instance = new ImageCache();
 
   private static final long DEFAULT_EXPIRE_TIME_OF_CACHED_FILES_HOURS = 24;
 
-  private static final String DEFAULT_CACHE_DIR = "cache"; // ${base.dir}+ File.separatorChar + "cache";
+  private static final String DEFAULT_CACHE_DIR = "image-cache"; // ${base.dir} + File.separatorChar + "image-cache";
 
-  private static final String CONFIG_KEY_CACHE_DIR = "base.cache.dir";
+  private static final String CONFIG_KEY_CACHE_DIR = "base.cache.images.dir";
 
-  private static final String CONFIG_KEY_CACHE_EXPIRE_TIME = "base.cache.expireTimeInHours";
+  private static final String CONFIG_KEY_CACHE_EXPIRE_TIME = "base.cache.images.expireTimeInHours";
 
-  public static FileCache instance()
+  public static ImageCache instance()
   {
     return instance;
   }
 
-  private FileCache()
+  private ImageCache()
   {
     init(CONFIG_KEY_CACHE_DIR, DEFAULT_CACHE_DIR, CONFIG_KEY_CACHE_EXPIRE_TIME, DEFAULT_EXPIRE_TIME_OF_CACHED_FILES_HOURS);
   }
