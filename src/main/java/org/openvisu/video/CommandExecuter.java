@@ -35,12 +35,23 @@ public class CommandExecuter
     pb.directory(executionDir);
     pb.redirectOutput(Redirect.INHERIT);
     pb.redirectError(Redirect.INHERIT);
+    Process p = null;
     try {
-      Process p = pb.start();
+      p = pb.start();
     } catch (IOException e) {
       String error = "Error while executing command '" + pb.command() + " in dir: " + executionDir + ": " + e.getMessage();
       log.error(error);
       throw new RuntimeException(error, e);
+    }
+    try {
+      p.waitFor();
+    } catch (InterruptedException e) {
+      String error = "Error while waiting for command '" + pb.command() + " in dir: " + executionDir + ": " + e.getMessage();
+      log.error(error);
+      throw new RuntimeException(error, e);
+    }
+    if (executionDir.getAbsolutePath().startsWith(TempFileCache.instance().getDirectory().getAbsolutePath()) == true) {
+      // Delete directory
     }
   }
   

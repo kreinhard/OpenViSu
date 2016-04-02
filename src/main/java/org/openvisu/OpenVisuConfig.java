@@ -12,8 +12,11 @@ import org.apache.commons.lang.StringUtils;
 /**
  * Used parameters with their default values:
  * <ul>
- * <li>cache.dir=./cache</li>
- * <li>cache.expireTimeInHours=24</li>
+ * <li>base.dir=openvisu (in current working dir)</li>
+ * <li>base.cache.dir=${base.dir}/cache</li>
+ * <li>base.cache.expireTimeInHours=24</li>
+ * <li>base.tmp.dir=${base.dir]/tmp</li>
+ * <li>base.tmp.expireTimeInHours=1</li>
  * <li>command.ffmpeg.path=ffmpeg</li>
  * <li>zoneminder.url=http://localhost/zm</li>
  * <li>zoneminder.viewUser=view</li>
@@ -38,8 +41,18 @@ public class OpenVisuConfig
 
   private File propFile;
 
+  private File baseDir;
+
   private OpenVisuConfig()
   {
+  }
+
+  public String getBaseDir()
+  {
+    if (baseDir == null) {
+      baseDir = new File(getProperty("base.dir", "openvisu"));
+    }
+    return baseDir.getAbsolutePath();
   }
 
   /**
@@ -76,14 +89,15 @@ public class OpenVisuConfig
       return defaultValue;
     }
   }
-  
+
   /**
    * 
    * @param key
    * @param value
    * @return for fluent pattern.
    */
-  public OpenVisuConfig setProperty(String key, String value) {
+  public OpenVisuConfig setProperty(String key, String value)
+  {
     if (props == null) {
       read();
     }
@@ -99,7 +113,7 @@ public class OpenVisuConfig
     String val = props.getProperty(key);
     return val;
   }
-  
+
   /**
    * 
    * @return this for fluent pattern.
@@ -109,7 +123,7 @@ public class OpenVisuConfig
     this.props = null;
     return this;
   }
-  
+
   public File getConfigFile()
   {
     return propFile;

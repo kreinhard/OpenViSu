@@ -1,8 +1,6 @@
 package org.openvisu.video;
 
 import java.io.File;
-import java.io.IOException;
-import java.lang.ProcessBuilder.Redirect;
 import java.util.Collection;
 
 import org.apache.commons.io.FilenameUtils;
@@ -34,23 +32,23 @@ public class Ffmpeg
     Validate.notEmpty(images, "No images given in method generate(Collection<Image>, ImageType).");
     // ffmpeg -y -framerate 2 -pattern_type glob -i '1_*.jpg' out.mp4
     // -y - Overwrite existing files
-    FileCache cache = FileCache.instance();
-    File destination = cache.getWorkingDirectory(destFile);
+    TempFileCache tmpFileCache = TempFileCache.instance();
+    File destination = tmpFileCache.getFile(destFile);
     if (destination.exists() == true) {
       // Exists already.
       return;
     }
     String command = CommandExecuter.instance().getCommandPath("ffmpeg", CONFIG_KEY_FFMPEG, DEFAULT_FFMPEG);
-    String workingDir = cache.getNewWorkingDirectory("ffmpeg-");
+    String workingDir = tmpFileCache.getNewTmpDirectory("ffmpeg-");
     int counter = 0;
     String imageExtension = FilenameUtils.getExtension(images.iterator().next().getFile());
     for (Image image : images) {
-      cache.copyImageToCache(image, type,
+      tmpFileCache.copyImageToTmp(image, type,
           new File(workingDir, "image-" + VideoUtils.getFormattedFrameId(++counter) + "." + imageExtension).getPath());
     }
     String[] commandWithArgs = { command, "-y", "-framerate", "2", "-pattern_type", "glob", "-i", "image-*." + imageExtension,
         destination.getAbsolutePath()};
-    File executionDir = cache.getWorkingDirectory(workingDir);
+    File executionDir = tmpFileCache.getFile(workingDir);
     CommandExecuter.instance().execute(executionDir, commandWithArgs);
   }
 
