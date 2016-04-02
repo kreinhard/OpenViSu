@@ -3,6 +3,7 @@ package org.openvisu.zoneminder;
 import java.util.Date;
 
 import org.openvisu.video.Image;
+import org.openvisu.video.ImageType;
 
 public class ZMImage implements Image
 {
@@ -49,6 +50,14 @@ public class ZMImage implements Image
   public String getFilename()
   {
     return filename;
+  }
+
+  public String getAbsoluteFilename(ImageType type)
+  {
+    if (type == ImageType.ANALYSIS) {
+      return getAbsoluteAnalyseFilename();
+    }
+    return getAbsoluteFilename();
   }
 
   public String getAbsoluteFilename()

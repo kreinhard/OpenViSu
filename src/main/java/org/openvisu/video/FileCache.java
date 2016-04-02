@@ -1,4 +1,4 @@
-package org.openvisu.zoneminder.remote;
+package org.openvisu.video;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,25 +14,29 @@ import org.openvisu.OpenVisuConfig;
  * @author kai
  *
  */
-public class ImageCache
+public class FileCache
 {
-  private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(ImageCache.class);
+  private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(FileCache.class);
 
-  private static final ImageCache instance = new ImageCache();
+  private static final FileCache instance = new FileCache();
 
   /**
    * Expire time in ms.
    */
   private static final long DEFAULT_EXPIRE_TIME_OF_CACHED_FILES_HOURS = 24;
 
-  private static final String IMAGE_CACHE_DIR_CONFIG_KEY = "zoneminder.imagecache.dir";
+  private static final String DEFAULT_CACHE_DIR = "./cache";
 
-  public static ImageCache instance()
+  private static final String CACHE_DIR_CONFIG_KEY = "cache.dir";
+
+  private static final String CACHE_EXPIRE_TIME_CONFIG_KEY = "cache.expireTimeInHours";
+
+  public static FileCache instance()
   {
     return instance;
   }
 
-  private File cacheDir;
+  private File cacheDir, workingDir;
 
   private long refreshIntervall = 60 * 60 * 1000; // 1 hour is the refresh interval.
 
@@ -49,13 +53,13 @@ public class ImageCache
 
   private int numberOfDeletedDirs = 0;
 
-  private ImageCache()
+  private FileCache()
   {
-    expireTime = OpenVisuConfig.instance().getProperty("zoneminder.imagecache.expireTimeInHours", DEFAULT_EXPIRE_TIME_OF_CACHED_FILES_HOURS)
+    expireTime = OpenVisuConfig.instance().getProperty(CACHE_EXPIRE_TIME_CONFIG_KEY, DEFAULT_EXPIRE_TIME_OF_CACHED_FILES_HOURS)
         * 60
         * 60
         * 1000;
-    cacheDir = new File(OpenVisuConfig.instance().getProperty(IMAGE_CACHE_DIR_CONFIG_KEY, "./imagecache"));
+    cacheDir = new File(OpenVisuConfig.instance().getProperty(CACHE_DIR_CONFIG_KEY, DEFAULT_CACHE_DIR));
     if (cacheDir.exists() == false) {
       log.info("Creating images cache directory: " + cacheDir.getAbsolutePath());
       if (cacheDir.mkdirs() == false) {
@@ -64,11 +68,18 @@ public class ImageCache
             + "'! Please configure another directory in '"
             + OpenVisuConfig.instance().getConfigFile().getAbsolutePath()
             + "': "
-            + IMAGE_CACHE_DIR_CONFIG_KEY
+            + CACHE_DIR_CONFIG_KEY
             + "=...");
       }
     } else {
       cleanUp();
+    }
+    workingDir = new File(cacheDir, "work");
+    if (workingDir.exists() == false) {
+      log.info("Creating working directory in images cache directory: " + workingDir.getAbsolutePath());
+      if (workingDir.mkdirs() == false) {
+        log.fatal("Couldn't create working cache directory for images '" + workingDir.getAbsolutePath() + "'!");
+      }
     }
   }
 
@@ -95,11 +106,25 @@ public class ImageCache
     }
     try {
       byte[] ba = FileUtils.readFileToByteArray(file);
-      //file.setLastModified(System.currentTimeMillis());
+      // file.setLastModified(System.currentTimeMillis());
       return ba;
     } catch (IOException e) {
       log.error("Can't read cached file '" + file.getAbsolutePath() + "'. Try to delete it manually. " + e.getMessage(), e);
       return null;
+    }
+  }
+
+  /**
+   * @param srcImage
+   * @param type
+   * @param destFile relative path inside cache directory.
+   */
+  public void copyImageToCache(Image srcImage, ImageType type, String destFile)
+  {
+    try {
+      FileUtils.copyFile(new File(srcImage.getAbsoluteFilename(type)), new File(cacheDir, destFile));
+    } catch (IOException e) {
+      log.error("Can't copy file " + srcImage.getAbsoluteFilename(type) + " to " + destFile + ". " + e.getMessage(), e);
     }
   }
 
