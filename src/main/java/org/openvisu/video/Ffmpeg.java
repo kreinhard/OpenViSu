@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.Collection;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 
 /**
  * Create and modify videos with ffmeg (calls System.exec).

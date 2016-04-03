@@ -8,7 +8,7 @@ import java.nio.file.attribute.FileTime;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.Validate;
 import org.openvisu.OpenVisuConfig;
 
 /**
