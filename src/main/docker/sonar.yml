@@ -1,8 +1,0 @@
-version: '2'
-services:
-    openvisu-sonar:
-        container_name: openvisu-sonar
-        image: sonarqube:5.3
-        ports:
-            - 9000:9000
-            - 9092:9092
