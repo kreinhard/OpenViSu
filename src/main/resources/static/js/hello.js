@@ -74,8 +74,8 @@ function($rootScope, $http, $location, $route) {
 	}
 
 }).controller('home', function($http) {
-	var self = this;
-	$http.get('http://localhost:9000').then(function(response) {
-		self.greeting = response.data;
-	})
+    var self = this;
+    $http.get('/resource/').then(function(response) {
+            self.greeting = response.data;
+    })
 });
