@@ -1,0 +1,23 @@
+{
+    "openViSuApp": {
+        "monitor" : {
+            "home": {
+                "title": "Monitors",
+                "createLabel": "Create a new Monitor",
+                "createOrEditLabel": "Create or edit a Monitor",
+                "search": "Search for Monitor"
+            },
+            "created": "A new Monitor is created with identifier {{ param }}",
+            "updated": "A Monitor is updated with identifier {{ param }}",
+            "deleted": "A Monitor is deleted with identifier {{ param }}",
+            "delete": {
+                "question": "Are you sure you want to delete Monitor {{ id }}?"
+            },
+            "detail": {
+                "title": "Monitor"
+            },
+            "name": "Name",
+            "description": "Description"
+        }
+    }
+}

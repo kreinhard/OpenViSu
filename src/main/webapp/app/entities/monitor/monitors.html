@@ -1,0 +1,58 @@
+<div>
+    <h2 translate="openViSuApp.monitor.home.title">Monitors</h2>
+    <jhi-alert></jhi-alert>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xs-4 no-padding-left">
+                <button class="btn btn-primary" ui-sref="monitor.new" >
+                    <span class="glyphicon glyphicon-plus"></span>
+                    <span  translate="openViSuApp.monitor.home.createLabel">
+                        Create new Monitor
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <br/>
+    <div class="table-responsive">
+        <table class="jh-table table table-striped">
+            <thead>
+                <tr>
+                    <th><span translate="global.field.id">ID</span></th>
+                    <th><span translate="openViSuApp.monitor.name">Name</span></th>
+                    <th><span translate="openViSuApp.monitor.description">Description</span></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="monitor in vm.monitors track by monitor.id">
+                    <td><a ui-sref="monitor-detail({id:monitor.id})">{{monitor.id}}</a></td>
+                    <td>{{monitor.name}}</td>
+                    <td>{{monitor.description}}</td>
+                    <td class="text-right">
+                        <div class="btn-group flex-btn-group-container">
+                            <button type="submit"
+                                    ui-sref="monitor-detail({id:monitor.id})"
+                                    class="btn btn-info btn-sm">
+                                <span class="glyphicon glyphicon-eye-open"></span>
+                                <span class="hidden-xs hidden-sm" translate="entity.action.view"></span>
+                            </button>
+                            <button type="submit"
+                                    ui-sref="monitor.edit({id:monitor.id})"
+                                    class="btn btn-primary btn-sm">
+                                <span class="glyphicon glyphicon-pencil"></span>
+                                <span class="hidden-xs hidden-sm" translate="entity.action.edit"></span>
+                            </button>
+                            <button type="submit"
+                                    ui-sref="monitor.delete({id:monitor.id})"
+                                    class="btn btn-danger btn-sm">
+                                <span class="glyphicon glyphicon-remove-circle"></span>
+                                <span class="hidden-xs hidden-sm" translate="entity.action.delete"></span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
