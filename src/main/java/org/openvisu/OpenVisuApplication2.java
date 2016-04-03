@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @SpringBootApplication
 @RestController
-public class OpenvisuApplication
+public class OpenVisuApplication
 {
   @Configuration
   @Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
@@ -48,6 +48,6 @@ public class OpenvisuApplication
 
   public static void main(String[] args)
   {
-    SpringApplication.run(OpenvisuApplication.class, args);
+    SpringApplication.run(OpenVisuApplication.class, args);
   }
 }
