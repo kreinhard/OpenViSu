@@ -188,7 +188,7 @@ public class ZMApiRepository
     Json2MapReader jsonReader = new Json2MapReader(json);
     Map<String, ? > pagination = (Map<String, ? >) jsonReader.getMap("pagination");
     try {
-      pageCount = (int) pagination.get("pageCount");
+      pageCount = (Integer) pagination.get("pageCount");
     } catch (Exception ex) {
       log.warn("Can't read any events (parameter pageCount expected but not given.", ex);
     }
