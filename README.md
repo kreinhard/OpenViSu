@@ -39,3 +39,5 @@ Testing the performance of ZoneMinder (php), may-be implement another recording 
 ###Eclipse
 1. mvn -DdownloadSources=true -DdownloadJavadocs=true  eclipse:eclipse
 2. Set project properties: Java compliance level 1.8
+3. Start from command line: mvn spring-boot:run or mvn package.
+4. You may start for debugging also OpenVisuApplication.java (if this not works try mvn package from command line first).
