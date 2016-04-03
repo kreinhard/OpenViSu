@@ -30,6 +30,8 @@ import org.springframework.web.util.WebUtils;
 
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter
 {
+  private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(SecurityConfiguration.class);
+
   @Override
   protected void configure(HttpSecurity http) throws Exception
   {
@@ -54,6 +56,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter
           List<GrantedAuthority> grantedAuths = new ArrayList<>();
           return new UsernamePasswordAuthenticationToken(name, password, grantedAuths);
         } else {
+          log.error("User authentication failed for user: " + name);
           throw new BadCredentialsException("Unable to auth against third party systems");
         }
       }
