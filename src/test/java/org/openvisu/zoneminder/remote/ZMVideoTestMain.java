@@ -36,24 +36,18 @@ public class ZMVideoTestMain
 
   public void test1()
   {
-    DateTime from = new DateTime().minusDays(1).withTime(10, 0, 0, 0);
-    DateTime until = from.plusHours(1);
-    List<ZMEvent> events = repo.getEvents(from.toDate(), until.toDate());
-    log.info("" + events.size() + " events read for all monitors.");
-    if (events.size() == 0) {
-      log.info("No events found. Giving up.");
-      return;
-    }
-    List< ? extends Image> images = repo.readImages(events.get(0).getId());
+    ZMEvent event = repo.getEvent("3453");
+    List< ? extends Image> images = repo.readImages(event.getId());
     for (Image image : images) {
       if (image.hasAnalyseFile() == true) {
         session.getEventImage(image.getAnalyseFile());
-      }else {
+      } else {
         session.getEventImage(image.getFile());
       }
     }
     Ffmpeg ffmpeg = new Ffmpeg();
-    ffmpeg.generate(images, ImageType.ANALYSIS, "ZMVideoTestMain" + VideoUtils.getVideoFilename("5", "42", VideoType.ANALYSIS, VideoSize.NORMAL));
+    ffmpeg.generate(images, ImageType.ANALYSIS,
+        "ZMVideoTestMain" + VideoUtils.getVideoFilename("5", "42", VideoType.ANALYSIS, VideoSize.NORMAL));
   }
 
   public ZMVideoTestMain()

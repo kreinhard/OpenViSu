@@ -1,10 +1,10 @@
 # OpenViSu Version 0.0.1
 Open Video Surveillance, it started with an *Easter hacking session*...
 
-##2016-03-31 Features already done
+##2016-04-03 Features already done
 1. ZoneMinder rest api works (getting events, alarms, frames, monitors, pictures etc.) including SSL support.
 2. Local caching of images for saving network bandwidth (configurable).
-3. Prototyp of MP4 (H.264) video creation from jpgs works.
+3. Prototyp of MP4 (H.264) video creation from jpgs works. Creted videos will be cached for replays.
 
 ##2016-03-31 What's next?
 1. Do the AngularJS stuff (web pages) with Spring security.
@@ -18,11 +18,6 @@ Should work responsive also on mobile devices (using Bootstrap with AngularJS)
 
 ###Play video
 Videogular (including livestream)
-
-###Convert jpg to stream
-http://www.oracle.com/technetwork/java/javase/documentation/jpegimagestomovie-176885.html
-http://stackoverflow.com/questions/24544361/how-to-create-a-mp4-video-from-images-in-java-by-using-jcodec-library
-http://jcodec.org
 
 ###Support of Netavis
 Waiting for the license key :-(

@@ -47,7 +47,7 @@ public class Ffmpeg
       tmpFileCache.copyImageToTmp(image, type,
           new File(workingDir, "image-" + VideoUtils.getFormattedFrameId(++counter) + "." + imageExtension).getPath());
     }
-    String[] commandWithArgs = { command, "-y", "-framerate", "2", "-pattern_type", "glob", "-i", "image-*." + imageExtension,
+    String[] commandWithArgs = { command, "-y", "-framerate", "50", "-pattern_type", "glob", "-i", "image-*." + imageExtension,
         destination.getAbsolutePath()};
     File executionDir = tmpFileCache.getFile(workingDir);
     CommandExecuter.instance().execute(executionDir, commandWithArgs);
