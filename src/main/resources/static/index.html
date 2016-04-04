@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-<title>Hello AngularJS</title>
+<title>Open Video Surveillance</title>
 <link href="css/angular-bootstrap.css" rel="stylesheet">
 <style type="text/css">
 [ng\:cloak], [ng-cloak], .ng-cloak {
@@ -10,7 +10,7 @@
 </style>
 </head>
 
-<body ng-app="hello" ng-cloak class="ng-cloak">
+<body ng-app="OpenVisu" ng-cloak class="ng-cloak">
   <nav ng-controller="navigation as nav" class="navbar navbar-default">
     <div class="container-fluid">
       <!-- Brand and toggle get grouped for better mobile display -->
@@ -25,6 +25,7 @@
         <ul class="nav navbar-nav">
           <li ng-class="{active:nav.tab('home')}"><a href="#/">home</a></li>
           <li ng-hide="authenticated" ng-class="{active:nav.tab('navigation')}"><a href="#/login">login</a></li>
+          <!--li ng-show="authenticated" ng-class="{active:nav.tab('playEvent')}"><a href="" ng-click="#/playEvent">play event</a></li-->
           <li ng-show="authenticated"><a href="" ng-click="nav.logout()">logout</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">

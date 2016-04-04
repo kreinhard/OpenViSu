@@ -1,4 +1,4 @@
-angular.module('hello', [ 'ngRoute' ]).config(function($routeProvider) {
+angular.module('OpenVisu', [ 'ngRoute' ]).config(function($routeProvider) {
 
 	$routeProvider.when('/', {
 		templateUrl : 'home.html',
