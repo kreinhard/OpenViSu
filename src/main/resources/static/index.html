@@ -25,7 +25,7 @@
         <ul class="nav navbar-nav">
           <li ng-class="{active:nav.tab('home')}"><a href="#/">home</a></li>
           <li ng-hide="authenticated" ng-class="{active:nav.tab('navigation')}"><a href="#/login">login</a></li>
-          <!--li ng-show="authenticated" ng-class="{active:nav.tab('playEvent')}"><a href="" ng-click="#/playEvent">play event</a></li-->
+          <li ng-show="authenticated" ng-class="{active:nav.tab('playEvent')}"><a href="#/playEvent">play event</a></li>
           <li ng-show="authenticated"><a href="" ng-click="nav.logout()">logout</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">

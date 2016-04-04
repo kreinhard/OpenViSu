@@ -1,8 +1,12 @@
-angular.module('OpenVisu', [ 'ngRoute' ]).config(function($routeProvider) {
+var openVisuApp = angular.module('OpenVisu', [ 'ngRoute' ]).config(function($routeProvider) {
 
 	$routeProvider.when('/', {
 		templateUrl : 'home.html',
 		controller : 'home',
+		controllerAs: 'controller'
+	}).when('/playEvent', {
+		templateUrl : 'playEvent.html',
+		controller : 'playEvent',
 		controllerAs: 'controller'
 	}).when('/login', {
 		templateUrl : 'login.html',
@@ -78,4 +82,16 @@ function($rootScope, $http, $location, $route) {
     $http.get('/resource/').then(function(response) {
             self.greeting = response.data;
     })
-});
+}).controller('playEvent', [ '$scope', function($scope) {
+	/*$scope.master = {};
+
+	$scope.update = function(user) {
+		$scope.master = angular.copy(user);
+	};
+
+	$scope.reset = function() {
+		$scope.user = angular.copy($scope.master);
+	};
+
+	$scope.reset();*/
+} ]);

@@ -1,0 +1,10 @@
+<div class="alert alert-danger" ng-show="controller.error">There was a problem logging in. Please try again.</div>
+
+<div ng-controller="playEvent">
+  <form role="form" ng-submit="controller.playEvent()">
+    <div class="form-group">
+      <label for="event">Event-id:</label> <input type="text" class="form-control" id="event" name="event" ng-model="controller.event.id" />
+    </div>
+    <button type="submit" class="btn btn-primary">play</button>
+  </form>
+</div>
