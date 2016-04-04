@@ -7,5 +7,11 @@
     <js>webjar:angularjs/1.5.3/angular-route.min.js</js>
     <js>webjar:angularjs/1.5.3/angular-cookies.min.js</js>
     <js>webjar:angularjs/1.5.3/angular-animate.min.js</js>
+    <js>webjar:angularjs/1.5.3/angular-sanitize.min.js</js>
+    <js>webjar:videogular/1.3.2/videogular.min.js</js>
+    <js>webjar:videogular/1.3.2/vg-controls.min.js</js>
+    <js>webjar:videogular/1.3.2/vg-overlay-play..min.js</js>
+    <js>webjar:videogular/1.3.2/vg-poster.min.js</js>
+    <js>webjar:videogular/1.3.2/vg-buffering.min.js</js>
   </group>
 </groups>
