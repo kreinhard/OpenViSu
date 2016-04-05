@@ -10,11 +10,13 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.joda.time.DateTime;
 import org.openvisu.OpenVisuConfig;
+import org.openvisu.video.ImageCache;
 import org.openvisu.zoneminder.ZMConfig;
 import org.openvisu.zoneminder.ZMEvent;
 import org.openvisu.zoneminder.ZMFrame;
 import org.openvisu.zoneminder.ZMFrameType;
 import org.openvisu.zoneminder.ZMImage;
+import org.openvisu.zoneminder.ZMMapping;
 import org.openvisu.zoneminder.ZMMonitor;
 
 /**
@@ -43,15 +45,23 @@ public class ZMApiRepositoryTestMain
 
   public void test1()
   {
-    DateTime from = new DateTime().minusDays(1).withTime(0, 0, 0, 0);
-    DateTime until = new DateTime();
+    DateTime from = new DateTime().minusDays(1).withTime(10, 0, 0, 0);
+    DateTime until = from.plusHours(2);
     List<ZMEvent> events = repo.getEvents(from.toDate(), until.toDate());
     log.info("" + events.size() + " events read for all monitors (" + getNumberOfNewEvents(events) + " new events)");
     SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd_HH-mm");
     for (ZMEvent event : events) {
       List<ZMImage> images = repo.readImages(event.getId());
-      Date eventStartTime = event.getTimestampValue("StartTime");
-      String path = "imagecache/" + event.getMonitorId() + "_" + fmt.format(eventStartTime) + "_event-" + event.getId() + "-";
+      Date eventStartTime = ZMMapping.getTimestampValue(event, "StartTime");
+      ImageCache imageCache = ImageCache.instance();
+      String path = new File(imageCache.getDirectory(), "test-images").getPath()
+          + File.separatorChar
+          + event.getMonitorId()
+          + "_"
+          + fmt.format(eventStartTime)
+          + "_event-"
+          + event.getId()
+          + "-";
       int alarmImages = 0;
       for (ZMImage image : images) {
         ZMFrame frame = image.getFrame();
@@ -68,7 +78,7 @@ public class ZMApiRepositoryTestMain
       if (alarmImages != event.getNumberOfAlarmFrames()) {
         log.error("*** Read alarm imges (" + alarmImages + ") != " + event.getNumberOfAlarmFrames() + "!!!!");
       } else if (alarmImages > 0) {
-        log.info("Read " + alarmImages + " alarm images of event " + event.getId() + " of monitor " + event.getMonitor().getId());
+        log.info("Read " + alarmImages + " alarm images of event " + event.getId() + " of monitor " + ZMMapping.getId(event.getMonitor()));
       }
     }
   }
@@ -100,10 +110,10 @@ public class ZMApiRepositoryTestMain
     log.info("Number of read monitors: " + numberOfMonitors);
     if (numberOfMonitors > 0) {
       ZMMonitor monitor = monitors.get(0);
-      if (monitor.getId() == null) {
+      if (ZMMapping.getId(monitor) == null) {
         log.error("******* Oups, monitorId is null for monitor: " + monitor);
       }
-      List<ZMEvent> events = repo.getAllEvents(monitor.getId());
+      List<ZMEvent> events = repo.getAllEvents(ZMMapping.getId(monitor));
       log.info("" + events.size() + " events read for monitor: " + monitor + " (" + getNumberOfNewEvents(events) + " new events)");
     }
     return this;
@@ -146,7 +156,7 @@ public class ZMApiRepositoryTestMain
     List<ZMMonitor> monitors = repo.getMonitors();
     if (monitors.size() > 0) {
       ZMMonitor monitor = monitors.get(0);
-      events = repo.getEvents(monitor.getId(), from, until);
+      events = repo.getEvents(ZMMapping.getId(monitor), from, until);
       log.info("" + events.size() + " events read for monitor: " + monitor + " (" + getNumberOfNewEvents(events) + " new events)");
     }
     return this;

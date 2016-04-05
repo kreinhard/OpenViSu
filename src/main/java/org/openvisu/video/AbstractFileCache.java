@@ -41,6 +41,9 @@ public abstract class AbstractFileCache
   {
   }
 
+  /**
+   * @return Used directory of this image cache.
+   */
   public File getDirectory()
   {
     return directory;

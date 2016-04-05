@@ -8,15 +8,15 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-public class ZMBaseObject
+public final class ZMMappingObject
 {
-  private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(ZMBaseObject.class);
+  private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(ZMMappingObject.class);
 
   private static final String TIMESTAMP_FORMAT = "yyyy-MM-dd HH:mm:ss"; // 2016-03-29 18:20:00
 
   private Map<String, String> map;
 
-  public ZMBaseObject(Map<String, String> map)
+  public ZMMappingObject(Map<String, String> map)
   {
     this.map = map;
   }

@@ -16,6 +16,7 @@ import org.openvisu.zoneminder.ZMEvent;
 import org.openvisu.zoneminder.ZMFrame;
 import org.openvisu.zoneminder.ZMFrameType;
 import org.openvisu.zoneminder.ZMImage;
+import org.openvisu.zoneminder.ZMMapping;
 import org.openvisu.zoneminder.ZMMonitor;
 import org.openvisu.zoneminder.ZMZone;
 import org.springframework.util.CollectionUtils;
@@ -78,7 +79,7 @@ public class ZMApiRepository
   public ZMMonitor getMonitor(String monitorId)
   {
     for (ZMMonitor monitor : getMonitors()) {
-      if (monitorId.equals(monitor.getId()) == true) {
+      if (monitorId.equals(ZMMapping.getId(monitor)) == true) {
         return monitor;
       }
     }
@@ -235,18 +236,18 @@ public class ZMApiRepository
     event.setMonitor(getMonitor(event.getMonitorId()));
     List<Map<String, ? >> frameObjects = jsonReader.getList("event", "Frame");
     List<ZMFrame> frames = new ArrayList<>();
-    //int alarmCounter = 0;
+    // int alarmCounter = 0;
     if (CollectionUtils.isEmpty(frameObjects) == false) {
       for (Map<String, ? > obj : frameObjects) {
         @SuppressWarnings("unchecked")
         ZMFrame frame = new ZMFrame((Map<String, String>) obj);
         // if (frame.getType() == ZMFrameType.ALARM) {
         // alarmCounter++;
-        //  }
+        // }
         frames.add(frame);
       }
     }
-    //log.info("Number of read frames: " + frames.size() + " with " + alarmCounter + " alarms.");
+    // log.info("Number of read frames: " + frames.size() + " with " + alarmCounter + " alarms.");
     event.setFrames(frames);
     return event;
   }
@@ -293,16 +294,15 @@ public class ZMApiRepository
         ZMFrame currentFrame = lastFrameWasBulk ? lastFrame : frame;
         // Insert missed images from last read bulk or current bulk frame:
         while (imageCounter < frameId) {
-          //log.info("Add bulk-image: " + imageCounter);
+          // log.info("Add bulk-image: " + imageCounter);
           ZMImage image = new ZMImage(baseFilename, event, currentFrame, VideoUtils.getFormattedFrameId(imageCounter++));
           images.add(image);
         }
       }
       imageCounter = frameId;
-      //log.info("Add image: " + imageCounter);
-      Date timestamp = frame.getTimestampValue("TimeStamp");
-      ZMImage image = new ZMImage(baseFilename, event, frame, VideoUtils.getFormattedFrameId(imageCounter++))
-          .setTimestamp(timestamp);
+      // log.info("Add image: " + imageCounter);
+      Date timestamp = ZMMapping.getTimestampValue(frame, "TimeStamp");
+      ZMImage image = new ZMImage(baseFilename, event, frame, VideoUtils.getFormattedFrameId(imageCounter++)).setTimestamp(timestamp);
       if (frame.getType() == ZMFrameType.ALARM) {
         image.setHasAnalyse(true);
       }
@@ -310,12 +310,12 @@ public class ZMApiRepository
       lastFrame = frame;
     }
     // Fill timestamps of bulk frame images:
-    DateTime startTimestamp = event.getJodaTimestampValue("StartTime");
-    DateTime endTimestamp = event.getJodaTimestampValue("EndTime");
+    DateTime startTimestamp = ZMMapping.getJodaTimestampValue(event, "StartTime");
+    DateTime endTimestamp = ZMMapping.getJodaTimestampValue(event, "EndTime");
     long duration = new Duration(startTimestamp, endTimestamp).getMillis();
     int numberOfImages = images.size();
     long rate = duration / numberOfImages;
-    //log.info("duration=" + duration + ", numberOfImages=" + numberOfImages + ", rate=" + rate);
+    // log.info("duration=" + duration + ", numberOfImages=" + numberOfImages + ", rate=" + rate);
     long delta = 0;
     for (ZMImage image : images) {
       if (image.getTimestamp() == null) {
@@ -354,7 +354,7 @@ public class ZMApiRepository
   {
     sb.append(event.getMonitorId()).append("/");
     // 2016-03-29 18:20:00 -> 16/03/29/18/20/00
-    char[] startTime = event.getValue("StartTime").toCharArray(); // yyyy-MM-dd HH:mm:ss
+    char[] startTime = ZMMapping.getValue(event, "StartTime").toCharArray(); // yyyy-MM-dd HH:mm:ss
     sb.append(startTime[2]).append(startTime[3]).append('/')// yy
         .append(startTime[5]).append(startTime[6]).append('/') // MM
         .append(startTime[8]).append(startTime[9]).append('/') // dd

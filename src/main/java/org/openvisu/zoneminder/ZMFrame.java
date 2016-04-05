@@ -4,19 +4,27 @@ import java.util.Map;
 
 import org.openvisu.video.VideoUtils;
 
-public class ZMFrame extends ZMBaseObject
+public class ZMFrame implements ZMMapping
 {
+  private ZMMappingObject mappingObject;
+
   private int frameId = -1;
   
   public ZMFrame(Map<String, String> map)
   {
-    super(map);
+    this.mappingObject = new ZMMappingObject(map);
+  }
+
+  @Override
+  public ZMMappingObject getMappingObject()
+  {
+    return this.mappingObject;
   }
 
   public int getFrameId()
   {
     if (frameId < 0) {
-      frameId = super.getIntValue("FrameId");
+      frameId = mappingObject.getIntValue("FrameId");
     }
     return frameId;
   }
@@ -32,17 +40,17 @@ public class ZMFrame extends ZMBaseObject
 
   public ZMFrameType getType()
   {
-    return ZMFrameType.get(getValue("Type"));
+    return ZMFrameType.get(mappingObject.getValue("Type"));
   }
 
   public int getScore()
   {
-    return getIntValue("Score");
+    return mappingObject.getIntValue("Score");
   }
 
   @Override
   public String toString()
   {
-    return "Frame #" + getId() + ", frameId=" + getFrameId() + ", type=" + getType();
+    return "Frame #" + mappingObject.getId() + ", frameId=" + getFrameId() + ", type=" + getType();
   }
 }

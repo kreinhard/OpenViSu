@@ -3,8 +3,12 @@ package org.openvisu.zoneminder;
 import java.util.List;
 import java.util.Map;
 
-public class ZMEvent extends ZMBaseObject
+import org.openvisu.video.Event;
+
+public class ZMEvent extends Event implements ZMMapping
 {
+  private ZMMappingObject mappingObject;
+
   private int alarmFrames = -1;
 
   private boolean newEvent;
@@ -15,10 +19,17 @@ public class ZMEvent extends ZMBaseObject
 
   public ZMEvent(Map<String, String> map)
   {
-    super(map);
+    this.mappingObject = new ZMMappingObject(map);
     if ("New Event".equals(getName()) == true) {
       newEvent = true;
     }
+    this.setId(mappingObject.getId());
+  }
+
+  @Override
+  public ZMMappingObject getMappingObject()
+  {
+    return this.mappingObject;
   }
 
   /**
@@ -42,20 +53,20 @@ public class ZMEvent extends ZMBaseObject
 
   public String getName()
   {
-    return super.getValue("Name");
+    return mappingObject.getValue("Name");
   }
 
   public int getNumberOfAlarmFrames()
   {
     if (alarmFrames == -1) {
-      alarmFrames = getIntValue("AlarmFrames");
+      alarmFrames = mappingObject.getIntValue("AlarmFrames");
     }
     return alarmFrames;
   }
 
   public String getMonitorId()
   {
-    return getValue("MonitorId");
+    return mappingObject.getValue("MonitorId");
   }
 
   public ZMMonitor getMonitor()

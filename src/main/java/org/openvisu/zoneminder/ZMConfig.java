@@ -2,31 +2,39 @@ package org.openvisu.zoneminder;
 
 import java.util.Map;
 
-public class ZMConfig extends ZMBaseObject
+public class ZMConfig implements ZMMapping
 {
+  private ZMMappingObject mappingObject;
+
   public ZMConfig(Map<String, String> map)
   {
-    super(map);
+    this.mappingObject = new ZMMappingObject(map);
+  }
+
+  @Override
+  public ZMMappingObject getMappingObject()
+  {
+    return this.mappingObject;
   }
 
   public String getName()
   {
-    return super.getValue("Name");
+    return mappingObject.getValue("Name");
   }
 
   public String getValue()
   {
-    return getValue("Value");
+    return mappingObject.getValue("Value");
   }
 
   public int getIntValue()
   {
-    return getIntValue("Value");
+    return mappingObject.getIntValue("Value");
   }
 
   @Override
   public String toString()
   {
-    return "Config #" + getId() + ": " + getName() + " = " + getValue("Value");
+    return "Config #" + mappingObject.getId() + ": " + getName() + " = " + mappingObject.getValue("Value");
   }
 }

@@ -14,10 +14,9 @@ import org.openvisu.zoneminder.ZMEvent;
 import org.openvisu.zoneminder.ZMFrame;
 import org.openvisu.zoneminder.ZMFrameType;
 import org.openvisu.zoneminder.ZMImage;
+import org.openvisu.zoneminder.ZMMapping;
 import org.openvisu.zoneminder.ZMMonitor;
 import org.openvisu.zoneminder.ZMMonitorFunction;
-import org.openvisu.zoneminder.remote.ZMApiRepository;
-import org.openvisu.zoneminder.remote.ZMClientSession;
 
 public class ZMApiRepositoryTest
 {
@@ -31,7 +30,7 @@ public class ZMApiRepositoryTest
     assertNotNull(monitors);
     assertEquals(monitors.size(), 5);
     assertTrue("Tuer".equals(monitors.get(0).getName()));
-    assertTrue("1".equals(monitors.get(0).getId()));
+    assertTrue("1".equals(ZMMapping.getId(monitors.get(0))));
     assertEquals(monitors.get(0).getFunction(), ZMMonitorFunction.MOCORD);
     assertEquals(monitors.get(1).getFunction(), ZMMonitorFunction.MOCORD);
     assertEquals(monitors.get(2).getFunction(), ZMMonitorFunction.RECORD);
@@ -51,7 +50,7 @@ public class ZMApiRepositoryTest
     assertEquals("Event-50", event.getName());
     assertEquals(21, event.getNumberOfAlarmFrames());
     assertEquals("2", event.getMonitorId());
-    assertEquals("2", event.getMonitor().getId());
+    assertEquals("2", ZMMapping.getId(event.getMonitor()));
     assertEquals("Garten-Ost", event.getMonitor().getName());
   }
 
@@ -84,7 +83,7 @@ public class ZMApiRepositoryTest
     assertEquals(21, alarmCounter);
     assertEquals(12, bulkCounter);
     ZMFrame frame = frames.get(34);
-    assertEquals("2334", frame.getId());
+    assertEquals("2334", ZMMapping.getId(frame));
     assertEquals(895, frame.getFrameId());
     assertEquals(3, frame.getScore());
     assertEquals(ZMFrameType.ALARM, frame.getType());
@@ -100,7 +99,7 @@ public class ZMApiRepositoryTest
     int counter = 1;
     int rate = 600000 / 1364; // delta in ms between two images.
     int delta = 0;
-    DateTime start = event.getJodaTimestampValue("StartTime");
+    DateTime start = ZMMapping.getJodaTimestampValue(event, "StartTime");
     for (ZMImage image : images) {
       assertTrue(image.getFile() + "-" + counter, image.getFile().contains(String.valueOf(counter++)));
       // System.out.println("Image " + image.getFilename() + ": timestamp=" + new DateTime(image.getTimestamp()));
