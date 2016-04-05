@@ -5,12 +5,12 @@
         .module('OpenVisu')
         .controller('PlayEventController', PlayEventController);
 
-    PlayEventController.$inject = ['$sce'];
+    PlayEventController.$inject = ['$scope', '$sce'];
 
    // MonitorDialogController.$inject = ['$sce', '$stateParams',
 	// '$uibModalInstance', 'entity', 'Monitor'];
 
-    function PlayEventController ($sce) {
+    function PlayEventController ($scope, $sce) {
     	
     	this.config = {
     			sources: [
