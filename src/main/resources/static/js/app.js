@@ -12,7 +12,7 @@ var openVisuApp = angular.module('OpenVisu', [ 'ngRoute',
 		controllerAs: 'controller'
 	}).when('/playEvent', {
 		templateUrl : 'playEvent.html',
-		controller : 'playEvent',
+		controller : 'PlayEventController',
 		controllerAs: 'controller'
 	}).when('/login', {
 		templateUrl : 'login.html',
@@ -88,34 +88,4 @@ function($rootScope, $http, $location, $route) {
     $http.get('/resource/').then(function(response) {
             self.greeting = response.data;
     })
-}).controller('playEvent', [ '$sce', function($sce) {
-	/*
-	 * $scope.master = {};
-	 * 
-	 * $scope.update = function(user) { $scope.master = angular.copy(user); };
-	 * 
-	 * $scope.reset = function() { $scope.user = angular.copy($scope.master); };
-	 * 
-	 * $scope.reset();
-	 */
-	this.config = {
-			sources: [
-				{src: $sce.trustAsResourceUrl("http://static.videogular.com/assets/videos/videogular.mp4"), type: "video/mp4"},
-				{src: $sce.trustAsResourceUrl("http://static.videogular.com/assets/videos/videogular.webm"), type: "video/webm"},
-				{src: $sce.trustAsResourceUrl("http://static.videogular.com/assets/videos/videogular.ogg"), type: "video/ogg"}
-			],
-			tracks: [
-				{
-					src: "http://www.videogular.com/assets/subs/pale-blue-dot.vtt",
-					kind: "subtitles",
-					srclang: "en",
-					label: "English",
-					default: ""
-				}
-			],
-			theme: "css/videogular.css",
-			plugins: {
-				poster: "http://www.videogular.com/assets/images/videogular.png"
-			}
-		};
-	}]);
+});
