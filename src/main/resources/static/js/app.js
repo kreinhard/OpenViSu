@@ -1,4 +1,7 @@
-var openVisuApp = angular.module('OpenVisu', [ 'ngRoute',
+(function() {
+    'use strict';
+
+    var openVisuApp = angular.module('OpenVisu', [ 'ui.router',
                                    			'ngSanitize',
                                    			"com.2fdevs.videogular",
                                    			"com.2fdevs.videogular.plugins.controls",
@@ -89,3 +92,4 @@ function($rootScope, $http, $location, $route) {
             self.greeting = response.data;
     })
 });
+})();

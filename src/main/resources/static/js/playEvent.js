@@ -3,7 +3,8 @@
 
     angular
         .module('OpenVisu')
-        .controller('PlayEventController', PlayEventController);
+        .controller('PlayEventController', PlayEventController)
+        ;//.config(stateConfig);
 
     PlayEventController.$inject = ['$scope', '$sce'];
 
@@ -53,4 +54,28 @@
 		 * vm.clear = function() { $uibModalInstance.dismiss('cancel'); };
 		 */
     }
+
+//stateConfig.$inject = ['$stateProvider'];
+
+function stateConfig($stateProvider) {
+// $stateProvider
+// .state('playEvent', {
+// // parent: 'app',
+// url: '/playEvent/{id}',
+// data: {
+// authorities: ['ROLE_USER'],
+// pageTitle: 'Play event'
+// },
+// views: {
+// 'content@': {
+// templateUrl: 'playEvent.html',
+// controller: 'PlayEventController',
+// controllerAs: 'vm'
+// }
+// },
+// resolve: {
+// }
+// })
+};
+
 })();
