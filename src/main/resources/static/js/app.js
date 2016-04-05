@@ -1,6 +1,9 @@
 var openVisuApp = angular.module('OpenVisu', [ 'ngRoute',
-                                   			"ngSanitize",
-                                   			"com.2fdevs.videogular"
+                                   			'ngSanitize',
+                                   			"com.2fdevs.videogular",
+                                   			"com.2fdevs.videogular.plugins.controls",
+                                			"com.2fdevs.videogular.plugins.overlayplay",
+                                			"com.2fdevs.videogular.plugins.poster"
                                    		]).config(function($routeProvider) {
 
 	$routeProvider.when('/', {
@@ -110,7 +113,7 @@ function($rootScope, $http, $location, $route) {
 					default: ""
 				}
 			],
-			theme: "bower_components/videogular-themes-default/videogular.css",
+			theme: "css/videogular.css",
 			plugins: {
 				poster: "http://www.videogular.com/assets/images/videogular.png"
 			}
