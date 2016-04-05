@@ -1,4 +1,4 @@
-package org.openvisu.webapp;
+package org.openvisu.web.rest;
 
 import java.security.Principal;
 import java.util.HashMap;

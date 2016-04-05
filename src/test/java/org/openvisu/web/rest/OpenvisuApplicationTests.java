@@ -1,8 +1,8 @@
-package org.openvisu.webapp;
+package org.openvisu.web.rest;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.openvisu.webapp.OpenVisuApplication;
+import org.openvisu.web.rest.OpenVisuApplication;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
