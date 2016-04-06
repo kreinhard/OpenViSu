@@ -2,7 +2,7 @@
     'use strict';
 
     angular
-        .module('jhipsterApp')
+        .module('OpenVisu')
         .config(stateConfig);
 
     stateConfig.$inject = ['$stateProvider'];
