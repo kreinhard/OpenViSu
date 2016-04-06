@@ -4,10 +4,10 @@
     <css>file:@project.basedir@/src/main/wro/main.less</css>
     <js>webjar:jquery/2.2.2/jquery.min.js</js>
     <js>webjar:angularjs/1.5.3/angular.min.js</js>
-    <js>webjar:angularjs/1.5.3/angular-route.min.js</js>
     <js>webjar:angularjs/1.5.3/angular-cookies.min.js</js>
     <js>webjar:angularjs/1.5.3/angular-animate.min.js</js>
     <js>webjar:angularjs/1.5.3/angular-sanitize.min.js</js>
+    <js>webjar:angular-ui-router/0.2.18/angular-ui-router.min.js</js>
   </group>
   <group name="videogular">
     <css>webjar:videogular-themes-default/1.2.0/videogular.min.css</css>

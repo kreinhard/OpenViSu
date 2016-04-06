@@ -1,34 +1,64 @@
-var openVisuApp = angular.module('OpenVisu', [ 'ngRoute',
+var openVisuApp = angular.module('OpenVisu', [ 'ui.router',
                                    			'ngSanitize',
                                    			"com.2fdevs.videogular",
                                    			"com.2fdevs.videogular.plugins.controls",
                                 			"com.2fdevs.videogular.plugins.overlayplay",
                                 			"com.2fdevs.videogular.plugins.poster"
-                                   		]).config(function($routeProvider) {
+                                   		]);
 
-	$routeProvider.when('/', {
-		templateUrl : 'home.html',
-		controller : 'home',
-		controllerAs: 'controller'
-	}).when('/playEvent', {
-		templateUrl : 'playEvent.html',
-		controller : 'PlayEventController',
-		controllerAs: 'controller'
-	}).when('/login', {
-		templateUrl : 'login.html',
-		controller : 'navigation',
-		controllerAs: 'controller'
-	}).otherwise('/');
+openVisuApp.config(function($stateProvider, $urlRouterProvider) {
+                                   			$stateProvider
+                                   			.state('home', {
+                                   				url: '/home',
+                                   				templateUrl: 'home.html'
+                                   			})
+                                   			.state('login', {
+                                   				url: '/login',
+                                   				templateUrl: 'login.html',
+                                   				controller: 'navigation'
+                                   			})
+                                   			.state('about', {
+                                   			})
+                                   			;
+                                   		});
 
-}).controller('navigation',
+openVisuApp.config(['$provide', '$stateProvider', '$urlRouterProvider',  '$httpProvider',
+     function ($provide, $stateProvider, $urlRouterProvider, $httpProvider) {
+    /* Put this routeprovider for when'/' then go to dashboard page. */
+    $urlRouterProvider
+      .when('/', function ($state) {
+          $state.go('home');
+      }).otherwise('/login');
+}
+]);        		
+// .config(function($routeProvider) {
+//
+// $routeProvider.when('/', {
+// templateUrl : 'home.html',
+// controller : 'home',
+// controllerAs: 'controller'
+// }).when('/playEvent', {
+// templateUrl : 'playEvent.html',
+// controller : 'PlayEventController',
+// controllerAs: 'controller'
+// }).when('/login', {
+// templateUrl : 'login.html',
+// controller : 'login',
+// controllerAs: 'controller'
+// }).otherwise('/');
 
-function($rootScope, $http, $location, $route) {
+openVisuApp.controller('navigation',
+
+function($rootScope, $http, $location, $timeout) {
 	
 	var self = this;
+	self.username = 'user';
+	self.password = 'pw';
+    //$timeout(function (){angular.element('[ng-model="self.username"]').focus();});
 
-	self.tab = function(route) {
-		return $route.current && route === $route.current.controller;
-	};
+// self.tab = function(route) {
+// return $route.current && route === $route.current.controller;
+// };
 
 	var authenticate = function(callback) {
 
@@ -83,7 +113,9 @@ function($rootScope, $http, $location, $route) {
 		});
 	}
 
-}).controller('home', function($http) {
+});
+
+openVisuApp.controller('home', function($http) {
     var self = this;
     $http.get('/resource/').then(function(response) {
             self.greeting = response.data;

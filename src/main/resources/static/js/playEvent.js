@@ -33,9 +33,11 @@
     			}
     		};
 
-    	function playEvent () {
-    		console.log('playEvent()!');
+    	$scope.master= {};
+        $scope.playEvent = function() {
+        	$scope.master= angular.copy($scope.event);
         }
+        $scope.playEvent();
        /*
 		 * var vm = this; vm.monitor = entity; vm.load = function(id) {
 		 * Monitor.get({id : id}, function(result) { vm.monitor = result; }); };

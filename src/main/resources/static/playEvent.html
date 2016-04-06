@@ -1,10 +1,12 @@
 <div class="alert alert-danger" ng-show="controller.error">There was a problem logging in. Please try again.</div>
 
 <div ng-controller="PlayEventController">
-  <form role="form" ng-submit="controller.playEvent()">
+  <form role="form" ng-submit="playEvent()">
     <div class="form-group">
-      <label for="event">Event-id:</label> <input type="text" class="form-control" id="event" name="event" ng-model="controller.event.id" />
+      <label for="event">Event-id:</label> <input type="text" class="form-control" id="event" name="event" ng-model="event.id" />
     </div>
+    <p>form = {{event.id}}</p>
+  <p>master = {{master.id}}</p>
     <button type="submit" class="btn btn-primary">play</button>
   </form>
   <videogular vg-theme="controller.config.theme">
