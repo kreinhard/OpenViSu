@@ -4,7 +4,9 @@ var openVisuApp = angular.module('OpenVisu', [ 'ngRoute',
                                    			"com.2fdevs.videogular.plugins.controls",
                                 			"com.2fdevs.videogular.plugins.overlayplay",
                                 			"com.2fdevs.videogular.plugins.poster"
-                                   		]).config(function($routeProvider) {
+                                   		]);
+
+openVisuApp.config(function($routeProvider) {
 
 	$routeProvider.when('/', {
 		templateUrl : 'home.html',
@@ -19,8 +21,10 @@ var openVisuApp = angular.module('OpenVisu', [ 'ngRoute',
 		controller : 'navigation',
 		controllerAs: 'controller'
 	}).otherwise('/');
+});
 
-}).controller('navigation',
+
+openVisuApp.controller('navigation',
 
 function($rootScope, $http, $location, $route) {
 	
@@ -83,7 +87,9 @@ function($rootScope, $http, $location, $route) {
 		});
 	}
 
-}).controller('home', function($http) {
+});
+
+openVisuApp.controller('home', function($http) {
     var self = this;
     $http.get('/resource/').then(function(response) {
             self.greeting = response.data;
