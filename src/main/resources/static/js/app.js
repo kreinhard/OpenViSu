@@ -4,7 +4,14 @@ var openVisuApp = angular.module('OpenVisu', [ 'ui.router',
                                    			"com.2fdevs.videogular.plugins.controls",
                                 			"com.2fdevs.videogular.plugins.overlayplay",
                                 			"com.2fdevs.videogular.plugins.poster"
-                                   		]);
+                                   		]).run(run);
+
+run.$inject = ['stateHandler'];
+
+function run(stateHandler) {
+ 	        stateHandler.initialize();
+}
+
 
 openVisuApp.config(function($stateProvider, $urlRouterProvider) {
                                    			$stateProvider
@@ -54,7 +61,8 @@ function($rootScope, $http, $location, $timeout) {
 	var self = this;
 	self.username = 'user';
 	self.password = 'pw';
-    //$timeout(function (){angular.element('[ng-model="self.username"]').focus();});
+    // $timeout(function
+	// (){angular.element('[ng-model="self.username"]').focus();});
 
 // self.tab = function(route) {
 // return $route.current && route === $route.current.controller;

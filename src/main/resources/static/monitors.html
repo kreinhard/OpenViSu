@@ -1,0 +1,32 @@
+<div class="alert alert-danger" ng-show="controller.error">There was a problem logging in. Please try again.</div>
+
+<div>
+  <h2>Monitors</h2>
+  <jhi-alert></jhi-alert>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-xs-4 no-padding-left">
+        <button class="btn btn-primary" ui-sref="monitor.new">
+          <span class="glyphicon glyphicon-plus"></span> <span> Create new Monitor </span>
+        </button>
+      </div>
+    </div>
+  </div>
+  <br />
+  <div class="table-responsive">
+    <table class="jh-table table table-striped">
+      <thead>
+        <tr>
+          <th><span>ID</span></th>
+          <th><span>Name</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="monitor in vm.monitors track by monitor.id">
+          <td><a ui-sref="monitor-detail({id:monitor.id})">{{monitor.id}}</a></td>
+          <td>{{monitor.name}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
