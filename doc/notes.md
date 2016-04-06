@@ -4,6 +4,9 @@
 ###AngularJS, Spring etc.
 - https://spring.io/guides/tutorials/spring-security-and-angular-js/
 
+###Image livestream
+- http://javawebsocketsvideo.blogspot.de
+
 ###Convert jpg to stream
 Outdated (because ImageMagick and ffmpeg from command line is used for now):
 - http://www.oracle.com/technetwork/java/javase/documentation/jpegimagestomovie-176885.html
