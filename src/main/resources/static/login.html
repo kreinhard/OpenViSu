@@ -1,7 +1,7 @@
 <div class="alert alert-danger" ng-show="controller.error">
     There was a problem logging in. Please try again.
 </div>
-<form ng-controller="navigation">
+<form ng-controller="NavigationController">
     <div class="form-group">
         <label for="username">Username ('user'):</label> <input type="text"
             class="form-control" id="username" name="username" ng-model="controller.credentials.username"/>
@@ -10,5 +10,5 @@
         <label for="password">Password ('pw'):</label> <input type="password"
             class="form-control" id="password" name="password" ng-model="controller.credentials.password"/>
     </div>
-    <button type="submit" class="btn btn-primary" ng-click="login()">Submit</button>
+    <button type="submit" class="btn btn-primary" ng-click="NavigationController.login()">Submit</button>
 </form>

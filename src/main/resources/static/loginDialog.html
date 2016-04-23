@@ -1,0 +1,11 @@
+<div class="alert alert-danger" ng-show="controller.error">
+    There was a problem logging in. Please try again.
+</div>
+<div>
+    <form ng-submit="LoginModalController.submit(username, password)">
+        <input type="user" ng-model="username"/>
+        <input type="password" ng-model="password"/>
+        <button>Submit</button>
+        <button ng-click="LoginModalController.cancel()">Cancel</button>
+    </form>
+</div>

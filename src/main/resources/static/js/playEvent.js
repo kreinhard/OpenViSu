@@ -2,7 +2,7 @@
     'use strict';
 
     angular
-        .module('OpenVisu')
+        .module('application')
         .controller('PlayEventController', PlayEventController);
 
     PlayEventController.$inject = ['$scope', '$sce'];
